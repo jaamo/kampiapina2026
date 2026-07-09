@@ -1,0 +1,374 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+const YT = "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ";
+
+const facts = [
+  { label: "Kotipaikka", value: "Espoo" },
+  { label: "Ammatti", value: "Insinööri" },
+  { label: "Lajit", value: "Maantie · Gravel · Maasto" },
+  { label: "Kalusto", value: "8 pyörää" },
+];
+
+const bikes = [
+  { name: "Surly Straggler", role: "Arkipyörä" },
+  { name: "Pelago Stavanger", role: "Gravel & retkeily" },
+  { name: "Maxx Jagamoasta", role: "Maasto" },
+  { name: "Pelago Sibbo", role: "Maantie" },
+  { name: "Pelago San Sebastian", role: "Fiksi" },
+  { name: "Nishiki Timbuk", role: "Retromaasturi" },
+  { name: "Merida Crossway Striker", role: "Cyclocross-raato" },
+  { name: "KOXX Unicycle", role: "Yksipyöräinen" },
+];
+---
+
+<Layout title="Kuka? — Kampiapina" description="Ajokortissa lukee Jaakko Alajoki. Espoolainen insinööri joka pitää pyöräilystä ja kantaa usein videokameraa mukana.">
+  <Nav active="kuka" />
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="hero__text">
+      <div class="eyebrow">Kuka on Kampiapina</div>
+      <h1 class="hero__title">Mitäs<br />ihmettä?</h1>
+      <p class="hero__body">
+        Ajokortissa lukee Jaakko Alajoki. Olen tylsä espoolainen insinööri,
+        keski-ikäinen ja pidän pyöräilystä. Pyöräilen arjessa, ajan maantietä,
+        rahistelen gravelia, rytkytän maastossa ja nautin retkistä.
+      </p>
+      <p class="hero__body">
+        Ja hyvin usein kannan videokameraa mukana. Jotkut sanovat sitä
+        pyöräilijäksi, jotkut influensseriksi, jotkut mediaksi, jotkut
+        tubettajaksi. Päätä itse.
+      </p>
+      <a href={YT} class="btn btn--primary">▶ Katso videoita YouTubessa</a>
+    </div>
+    <div class="hero__media">
+      <div class="hero__media-glow"></div>
+      <span class="placeholder">[ PROFIILIKUVA ]</span>
+    </div>
+  </div>
+
+  <!-- quick facts -->
+  <div class="facts">
+    {
+      facts.map((f) => (
+        <div class="facts__cell">
+          <div class="facts__label">{f.label}</div>
+          <div class="facts__value">{f.value}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- kalusto -->
+  <div class="section">
+    <div class="section__head">
+      <div>
+        <div class="eyebrow">Talli</div>
+        <h2 class="section__title">Kalusto</h2>
+      </div>
+      <span class="section__aside">Jokaiseen keliin ja mielentilaan oma rautansa.</span>
+    </div>
+    <div class="bike-grid">
+      {
+        bikes.map((bike) => (
+          <div class="bike-card">
+            <div class="bike-card__img">
+              <span class="bike-card__ph">[ kuva ]</span>
+            </div>
+            <div class="bike-card__body">
+              <div class="bike-card__name">{bike.name}</div>
+              <div class="bike-card__role">{bike.role}</div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- pyoratori note -->
+  <div class="pyoratori">
+    <div>
+      <div class="pyoratori__title">Vaihtuuko kalusto?</div>
+      <p class="pyoratori__desc">
+        Tsekkaa käytetyt polkupyörät osoitteessa pyoratori.com — sieltä löytyy
+        silloin tällöin myös allekirjoittaneen vanhaa rautaa.
+      </p>
+    </div>
+    <a href="https://pyoratori.com/" class="pyoratori__cta">pyoratori.com →</a>
+  </div>
+
+  <Footer />
+</Layout>
+
+<style>
+  .eyebrow {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 18px;
+  }
+  .placeholder {
+    position: relative;
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.12em;
+    color: rgba(237, 230, 210, 0.5);
+    font-size: 13px;
+    border: 1px dashed rgba(237, 230, 210, 0.35);
+    padding: 9px 15px;
+  }
+
+  /* hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+  }
+  .hero__text {
+    padding: 72px 46px 64px;
+    background: #191a10;
+  }
+  .hero__title {
+    font-weight: 900;
+    font-size: 88px;
+    line-height: 0.9;
+    margin: 0 0 26px;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  .hero__body {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 0 20px;
+    color: #cfc7ad;
+    font-weight: 500;
+  }
+  .hero__body:last-of-type {
+    margin-bottom: 32px;
+  }
+  .hero__media {
+    position: relative;
+    min-height: 520px;
+    background: #20220f;
+    background-image: repeating-linear-gradient(65deg, rgba(105, 108, 70, 0.35) 0 2px, transparent 2px 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero__media-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 100% at 60% 20%, rgba(226, 112, 27, 0.14), transparent 55%);
+  }
+
+  .btn {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .btn--primary {
+    background: #911b1b;
+    color: #ede6d2;
+  }
+  .btn--primary:hover {
+    background: #a51f1f;
+  }
+
+  /* facts */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+  }
+  .facts__cell {
+    padding: 28px 40px;
+    border-right: 1px solid rgba(237, 230, 210, 0.1);
+  }
+  .facts__cell:last-child {
+    border-right: none;
+  }
+  .facts__label {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-bottom: 6px;
+  }
+  .facts__value {
+    font-weight: 800;
+    font-size: 19px;
+  }
+
+  /* section */
+  .section {
+    padding: 64px 46px;
+  }
+  .section__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    gap: 24px;
+  }
+  .section__title {
+    font-weight: 900;
+    font-size: 46px;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .section__aside {
+    color: #8f9270;
+    font-weight: 600;
+    font-size: 14px;
+    max-width: 320px;
+    text-align: right;
+  }
+
+  .bike-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+  .bike-card {
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    background: #191a10;
+    transition: border-color 0.15s ease;
+  }
+  .bike-card:hover {
+    border-color: rgba(226, 112, 27, 0.6);
+  }
+  .bike-card__img {
+    aspect-ratio: 4 / 3;
+    background: #20220f;
+    background-image: repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.4) 0 2px, transparent 2px 30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+  }
+  .bike-card__ph {
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.1em;
+    color: rgba(237, 230, 210, 0.45);
+    font-size: 12px;
+  }
+  .bike-card__body {
+    padding: 16px 16px 18px;
+  }
+  .bike-card__name {
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .bike-card__role {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #e2701b;
+    font-weight: 700;
+  }
+
+  /* pyoratori */
+  .pyoratori {
+    margin: 0 46px 64px;
+    background: linear-gradient(100deg, #20220f, #191a10);
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    border-radius: 4px;
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .pyoratori__title {
+    font-weight: 800;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .pyoratori__desc {
+    margin: 0;
+    color: #a8a488;
+    font-size: 15px;
+    max-width: 520px;
+    font-weight: 500;
+  }
+  .pyoratori__cta {
+    background: #e2701b;
+    color: #15160e;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 15px 28px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pyoratori__cta:hover {
+    background: #f0842e;
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+    .hero__media {
+      min-height: 320px;
+    }
+    .hero__title {
+      font-size: 68px;
+    }
+    .facts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .facts__cell:nth-child(2) {
+      border-right: none;
+    }
+    .bike-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .hero__text {
+      padding: 48px 24px;
+    }
+    .hero__title {
+      font-size: 52px;
+    }
+    .facts {
+      grid-template-columns: 1fr;
+    }
+    .facts__cell {
+      border-right: none;
+    }
+    .section {
+      padding: 48px 24px;
+    }
+    .section__head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .section__aside {
+      text-align: left;
+    }
+    .bike-grid {
+      grid-template-columns: 1fr;
+    }
+    .pyoratori {
+      margin: 0 24px 48px;
+      padding: 28px 24px;
+    }
+  }
+</style>

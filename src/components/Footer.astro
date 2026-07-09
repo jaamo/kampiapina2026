@@ -1,0 +1,127 @@
+---
+const pages = [
+  { label: "Etusivu", href: "/" },
+  { label: "Kuka?", href: "/kuka" },
+  { label: "Blogi", href: "/blogi" },
+  { label: "Yhteistyöt", href: "/yhteistyot" },
+];
+
+const socials = [
+  { label: "YouTube", href: "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ" },
+  { label: "Instagram", href: "https://www.instagram.com/kampiapina/" },
+  { label: "Threads", href: "https://www.threads.net/@kampiapina" },
+  { label: "Discord", href: "https://discord.gg/j2J5aZGXAC" },
+];
+---
+
+<footer class="ka-footer">
+  <div class="ka-footer__top">
+    <div>
+      <div class="ka-footer__brand">
+        <img src="/logo-white.svg" alt="Kampiapina" class="ka-footer__logo" />
+      </div>
+      <p class="ka-footer__blurb">
+        Allekirjoittaneen pyöräilypersoonallisuus. Maantietä, gravelia, maastoa
+        ja retkiä — usein videokamera mukana. Morjesta pöytään.
+      </p>
+    </div>
+    <div>
+      <div class="ka-footer__heading">Sivut</div>
+      <div class="ka-footer__col">
+        {pages.map((p) => <a href={p.href} class="ka-footer__link">{p.label}</a>)}
+      </div>
+    </div>
+    <div>
+      <div class="ka-footer__heading">Seuraa</div>
+      <div class="ka-footer__col">
+        {socials.map((s) => <a href={s.href} class="ka-footer__link">{s.label}</a>)}
+      </div>
+    </div>
+  </div>
+  <div class="ka-footer__bottom">
+    <span>© 2026 · Jaakko Alajoki</span>
+    <span class="ka-footer__sign">Morjesta pöytään 🚲</span>
+  </div>
+</footer>
+
+<style>
+  .ka-footer {
+    background: #0f1008;
+    color: #8f9270;
+    font-family: "Montserrat", sans-serif;
+    border-top: 1px solid rgba(237, 230, 210, 0.1);
+  }
+  .ka-footer__top {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 40px;
+    padding: 52px 46px 40px;
+  }
+  .ka-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ka-footer__logo {
+    height: 56px;
+    width: auto;
+    display: block;
+  }
+  .ka-footer__blurb {
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 340px;
+    margin: 0;
+    font-weight: 500;
+  }
+  .ka-footer__heading {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .ka-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .ka-footer__link {
+    color: #c7c1a8;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .ka-footer__link:hover {
+    color: #e2701b;
+  }
+  .ka-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 46px;
+    border-top: 1px solid rgba(237, 230, 210, 0.08);
+    font-size: 13px;
+  }
+  .ka-footer__sign {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 720px) {
+    .ka-footer__top {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding: 40px 24px 32px;
+    }
+    .ka-footer__bottom {
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+      padding: 20px 24px;
+    }
+  }
+</style>

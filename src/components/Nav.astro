@@ -1,0 +1,136 @@
+---
+interface Props {
+  active?: "etusivu" | "kuka" | "blogi" | "yhteistyot";
+}
+
+const { active = "etusivu" } = Astro.props;
+
+const links = [
+  { label: "Etusivu", href: "/", key: "etusivu" },
+  { label: "Kuka?", href: "/kuka", key: "kuka" },
+  { label: "Blogi", href: "/blogi", key: "blogi" },
+  { label: "Yhteistyöt", href: "/yhteistyot", key: "yhteistyot" },
+];
+---
+
+<div class="ka-nav">
+  <a href="/" class="ka-nav__brand">
+    <img src="/logo-white.svg" alt="Kampiapina" class="ka-nav__logo" />
+    <span class="ka-nav__wordmark">
+      <span class="ka-nav__name">KAMPIAPINA</span>
+      <span class="ka-nav__tagline">Morjesta pöytään</span>
+    </span>
+  </a>
+  <div class="ka-nav__links">
+    {
+      links.map((link) => (
+        <a
+          href={link.href}
+          class="ka-nav__link"
+          style={`color:${link.key === active ? "#EDE6D2" : "#8f9270"};`}
+        >
+          {link.label}
+        </a>
+      ))
+    }
+    <a
+      href="https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ"
+      class="ka-nav__yt"
+    >
+      ▶ YOUTUBE
+    </a>
+  </div>
+</div>
+
+<style>
+  .ka-nav {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    background: #15160e;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    font-family: "Montserrat", sans-serif;
+  }
+  .ka-nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    background: #911b1b;
+    padding: 10px 46px 10px 34px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 26px) 100%, 0 100%);
+    flex: 0 0 auto;
+  }
+  .ka-nav__logo {
+    height: 64px;
+    width: auto;
+    display: block;
+  }
+  .ka-nav__wordmark {
+    display: flex;
+    flex-direction: column;
+  }
+  .ka-nav__name {
+    font-weight: 900;
+    font-size: 21px;
+    letter-spacing: 0.02em;
+    color: #ede6d2;
+    line-height: 0.9;
+  }
+  .ka-nav__tagline {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #f2caca;
+    margin-top: 6px;
+  }
+  .ka-nav__links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    padding: 0 34px;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    flex: 0 1 auto;
+  }
+  .ka-nav__link {
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+  }
+  .ka-nav__link:hover {
+    color: #ede6d2 !important;
+  }
+  .ka-nav__yt {
+    background: #911b1b;
+    color: #ede6d2;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .ka-nav__yt:hover {
+    background: #a51f1f;
+  }
+
+  @media (max-width: 720px) {
+    .ka-nav {
+      flex-direction: column;
+    }
+    .ka-nav__brand {
+      clip-path: none;
+      justify-content: center;
+      padding: 14px 24px;
+    }
+    .ka-nav__links {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px 20px;
+      padding: 16px 20px;
+    }
+  }
+</style>

@@ -1,0 +1,645 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+const YT = "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ";
+
+const videos = [
+  {
+    n: "01",
+    title: "Kaldoaivi Ultra Trail",
+    desc: "Miltä maistuu 130 kilometriä maastopyöräilyä Suomen pohjoisimmassa erämaassa? Ja miten lajiharjoittelun laiminlyönti näkyy kilpailussa?",
+  },
+  {
+    n: "02",
+    title: "Tubeless epäopetusvideo",
+    desc: "Vuonna 2022 päätin luopua sisärenkaista ja liittyä tubeless-kulttiin. Kaikki ei taaskaan mennyt ihan suunnitelmien mukaan.",
+  },
+  {
+    n: "03",
+    title: "Randoällärit",
+    desc: "Unelmana ajaa 500 km vuorokaudessa. Muistoksi jäi mentaalinen sulaminen itäisen Uudenmaan sydämessä.",
+  },
+];
+
+const socials = [
+  { name: "Instagram", note: "Kivoja pyöräilykuvia ja stooreja. YouTuben jälkeen aktiivisin.", url: "https://www.instagram.com/kampiapina/" },
+  { name: "Threads", note: "Zuckerbergin oma pikku Twitter. Käyn täällä usein.", url: "https://www.threads.net/@kampiapina" },
+  { name: "TikTok", note: "Lyhytvideoita — jos tykkäät jakaa datasi Kiinan kanssa.", url: "https://www.tiktok.com/@kampiapina" },
+  { name: "Discord", note: "Pyöräily-serveri. Reaaliaikaista jutustelua porukan kanssa.", url: "https://discord.gg/j2J5aZGXAC" },
+  { name: "Strava", note: "Jakaakseen jotain on ensin hikoiltava.", url: "https://www.strava.com/athletes/2914941" },
+];
+---
+
+<Layout title="Kampiapina — Morjesta pöytään">
+  <Nav active="etusivu" />
+
+  <!-- hero -->
+  <div class="hero">
+    <img
+      src="https://kampiapina.com/wp-content/uploads/2023/12/2023-maantiekauden-avaus.jpg"
+      alt=""
+      class="hero__img"
+    />
+    <div class="hero__grad"></div>
+    <div class="hero__glow"></div>
+    <img src="/logo-white.svg" alt="" class="hero__watermark" />
+    <div class="hero__inner">
+      <h1 class="hero__title">Morjesta<br />pöytään</h1>
+      <p class="hero__lead">
+        Pyöräilyä maalta, maantieltä ja erämaasta. Kampiapina kantaa
+        videokameraa sinne minne muut eivät jaksa polkea. Tule mukaan.
+      </p>
+      <div class="hero__actions">
+        <a href={YT} class="btn btn--primary">▶ Katso YouTubessa</a>
+        <a href="/kuka" class="btn btn--ghost">Kuka mä oon?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- stats bar -->
+  <div class="stats">
+    <div class="stats__cell">
+      <div class="stats__num" style="color:#E2701B;">8</div>
+      <div class="stats__label">Pyörää tallissa</div>
+    </div>
+    <div class="stats__cell">
+      <div class="stats__num" style="color:#FBB405;">130<span style="font-size:24px;">km</span></div>
+      <div class="stats__label">Pisin maastoetappi</div>
+    </div>
+    <div class="stats__cell">
+      <div class="stats__num" style="color:#696C46;">7</div>
+      <div class="stats__label">Some-kanavaa</div>
+    </div>
+    <div class="stats__cell">
+      <div class="stats__num" style="color:#EDE6D2;">∞</div>
+      <div class="stats__label">Huonoja päätöksiä</div>
+    </div>
+  </div>
+
+  <!-- featured videos -->
+  <div class="section">
+    <div class="section__head">
+      <div>
+        <div class="eyebrow">Katsotuimmat</div>
+        <h2 class="section__title">Parhaat videot</h2>
+      </div>
+      <a href={YT} class="section__more">Kaikki videot →</a>
+    </div>
+    <div class="video-grid">
+      {
+        videos.map((video) => (
+          <a href={YT} class="video-card">
+            <div class="video-card__thumb">
+              <span class="video-card__n">{video.n}</span>
+              <span class="video-card__play">▶</span>
+            </div>
+            <div class="video-card__body">
+              <h3 class="video-card__title">{video.title}</h3>
+              <p class="video-card__desc">{video.desc}</p>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- about -->
+  <div class="about">
+    <div class="about__text">
+      <div class="eyebrow">Kuka on Kampiapina</div>
+      <h2 class="about__title">Mitäs ihmettä?</h2>
+      <p class="about__body">
+        Ajokortissa lukee Jaakko Alajoki. Tylsä espoolainen insinööri,
+        keski-ikäinen, ja pitää pyöräilystä. Arkipyöräilyä, maantietä, gravelia,
+        maastoa ja retkiä — hyvin usein videokamera mukana.
+      </p>
+      <a href="/kuka" class="link-underline">Koko tarina →</a>
+    </div>
+    <div class="about__media">
+      <span class="placeholder">[ PROFIILIKUVA ]</span>
+    </div>
+  </div>
+
+  <!-- pyoratori -->
+  <a href="https://pyoratori.com/" class="pyoratori">
+    <img
+      src="https://kampiapina.com/wp-content/uploads/2026/04/logo-final-white-2.png"
+      alt=""
+      class="pyoratori__logo"
+    />
+    <span class="pyoratori__text">
+      Tsekkaa käytetyt polkupyörät osoitteessa
+      <span class="pyoratori__brand">pyoratori.com</span> →
+    </span>
+  </a>
+
+  <!-- socials -->
+  <div class="socials">
+    <h2 class="socials__title">Some-kanavat</h2>
+    <p class="socials__sub">YouTube ykkösenä — muut tukevat sitä.</p>
+    <a href={YT} class="yt-hero">
+      <div class="yt-hero__icon">▶</div>
+      <div>
+        <div class="yt-hero__name">YouTube</div>
+        <div class="yt-hero__desc">
+          Tää on se juttu, miksi tätä hommaa teen. Jos tsekkaat jotain, tsekkaa
+          tämä.
+        </div>
+      </div>
+      <span class="yt-hero__cta">Tilaa</span>
+    </a>
+    <div class="social-grid">
+      {
+        socials.map((social) => (
+          <a href={social.url} class="social-tile">
+            <span class="social-tile__dot" />
+            <span class="social-tile__name">{social.name}</span>
+            <span class="social-tile__note">{social.note}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
+
+<style>
+  .eyebrow {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 10px;
+  }
+
+  /* hero */
+  .hero {
+    position: relative;
+    min-height: 640px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: #20220f;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.32) 0 2px, transparent 2px 44px),
+      repeating-linear-gradient(65deg, rgba(105, 108, 70, 0.24) 0 2px, transparent 2px 62px);
+  }
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    font-size: 0;
+    color: transparent;
+  }
+  .hero__grad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(21, 22, 14, 0.35) 0%,
+      rgba(21, 22, 14, 0.55) 45%,
+      rgba(21, 22, 14, 0.94) 100%
+    );
+  }
+  .hero__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 100% at 75% 15%, rgba(226, 112, 27, 0.16), transparent 55%);
+  }
+  .hero__watermark {
+    position: absolute;
+    top: 50%;
+    right: -300px;
+    transform: translateY(-50%) rotate(-15deg);
+    height: 150%;
+    width: auto;
+    opacity: 0.12;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .hero__inner {
+    padding: 0 46px 60px;
+    position: relative;
+    z-index: 2;
+    max-width: 840px;
+  }
+  .hero__title {
+    font-weight: 900;
+    font-size: 108px;
+    line-height: 0.9;
+    margin: 0 0 22px;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  }
+  .hero__lead {
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 540px;
+    margin: 0 0 34px;
+    color: #e0d8be;
+    font-weight: 500;
+  }
+  .hero__actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 17px 34px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .btn--primary {
+    background: #911b1b;
+    color: #ede6d2;
+  }
+  .btn--primary:hover {
+    background: #a51f1f;
+  }
+  .btn--ghost {
+    color: #ede6d2;
+    padding: 17px 30px;
+    border: 1px solid rgba(237, 230, 210, 0.4);
+    backdrop-filter: blur(2px);
+  }
+  .btn--ghost:hover {
+    border-color: rgba(237, 230, 210, 0.8);
+  }
+
+  /* stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    background: #191a10;
+  }
+  .stats__cell {
+    padding: 30px 40px;
+    border-right: 1px solid rgba(237, 230, 210, 0.1);
+  }
+  .stats__cell:last-child {
+    border-right: none;
+  }
+  .stats__num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 52px;
+    line-height: 1;
+  }
+  .stats__label {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-top: 6px;
+  }
+
+  /* section */
+  .section {
+    padding: 64px 46px;
+  }
+  .section__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+  .section__title {
+    font-weight: 900;
+    font-size: 46px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .section__more {
+    color: #8f9270;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .section__more:hover {
+    color: #e2701b;
+  }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+  }
+  .video-card {
+    text-decoration: none;
+    color: #ede6d2;
+    display: flex;
+    flex-direction: column;
+  }
+  .video-card__thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: #20220f;
+    background-image: repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.4) 0 2px, transparent 2px 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .video-card__n {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 0.8;
+    color: rgba(237, 230, 210, 0.85);
+  }
+  .video-card__play {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(145, 27, 27, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ede6d2;
+    font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+  .video-card:hover .video-card__play {
+    transform: scale(1.08);
+    background: #911b1b;
+  }
+  .video-card__body {
+    padding: 18px 2px 0;
+  }
+  .video-card__title {
+    font-weight: 800;
+    font-size: 20px;
+    margin: 0 0 9px;
+    line-height: 1.15;
+  }
+  .video-card__desc {
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0;
+    color: #a8a488;
+    font-weight: 500;
+  }
+
+  /* about */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid rgba(237, 230, 210, 0.12);
+  }
+  .about__text {
+    padding: 64px 46px;
+    background: #191a10;
+  }
+  .about__title {
+    font-weight: 900;
+    font-size: 44px;
+    margin: 0 0 20px;
+    text-transform: uppercase;
+  }
+  .about__body {
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 28px;
+    color: #cfc7ad;
+    max-width: 480px;
+    font-weight: 500;
+  }
+  .about__media {
+    position: relative;
+    min-height: 400px;
+    background: #20220f;
+    background-image: repeating-linear-gradient(65deg, rgba(105, 108, 70, 0.35) 0 2px, transparent 2px 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .link-underline {
+    display: inline-block;
+    color: #ede6d2;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 15px;
+    border-bottom: 2px solid #e2701b;
+    padding-bottom: 5px;
+  }
+  .placeholder {
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.12em;
+    color: rgba(237, 230, 210, 0.5);
+    font-size: 13px;
+    border: 1px dashed rgba(237, 230, 210, 0.35);
+    padding: 9px 15px;
+  }
+
+  /* pyoratori */
+  .pyoratori {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    text-decoration: none;
+    padding: 34px 46px;
+    background: #191a10;
+    border-top: 1px solid rgba(237, 230, 210, 0.12);
+    color: #ede6d2;
+  }
+  .pyoratori:hover {
+    background: #1e1f12;
+  }
+  .pyoratori__logo {
+    height: 64px;
+    width: auto;
+    display: block;
+    flex: 0 0 auto;
+  }
+  .pyoratori__text {
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+  .pyoratori__brand {
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* socials */
+  .socials {
+    padding: 64px 46px;
+    border-top: 1px solid rgba(237, 230, 210, 0.12);
+  }
+  .socials__title {
+    font-weight: 900;
+    font-size: 44px;
+    margin: 0 0 6px;
+    text-transform: uppercase;
+  }
+  .socials__sub {
+    color: #8f9270;
+    margin: 0 0 32px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .yt-hero {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 26px;
+    text-decoration: none;
+    color: #ede6d2;
+    background: linear-gradient(100deg, #911b1b, #6d1414);
+    padding: 34px 40px;
+    margin-bottom: 20px;
+    border-radius: 3px;
+  }
+  .yt-hero__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(237, 230, 210, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+  }
+  .yt-hero__name {
+    font-weight: 900;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .yt-hero__desc {
+    color: #e4c7c7;
+    font-size: 15px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .yt-hero__cta {
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 13px;
+    background: #ede6d2;
+    color: #911b1b;
+    padding: 14px 24px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .social-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  .social-tile {
+    text-decoration: none;
+    color: #ede6d2;
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    background: #191a10;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 150px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .social-tile:hover {
+    border: 1px solid #e2701b;
+    background: #1e1f12;
+  }
+  .social-tile__dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #696c46;
+  }
+  .social-tile__name {
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .social-tile__note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #a8a488;
+    font-weight: 500;
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .hero__title {
+      font-size: 72px;
+    }
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .stats__cell:nth-child(2) {
+      border-right: none;
+    }
+    .video-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .about {
+      grid-template-columns: 1fr;
+    }
+    .social-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .hero__title {
+      font-size: 54px;
+    }
+    .hero__inner,
+    .section,
+    .socials {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .stats {
+      grid-template-columns: 1fr;
+    }
+    .stats__cell {
+      border-right: none;
+    }
+    .video-grid,
+    .social-grid {
+      grid-template-columns: 1fr;
+    }
+    .yt-hero {
+      grid-template-columns: auto 1fr;
+    }
+    .yt-hero__cta {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+    .pyoratori {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>

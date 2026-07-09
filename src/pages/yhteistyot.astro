@@ -1,0 +1,519 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+const stats = [
+  { value: "12,4k", label: "YouTube-tilaajaa", color: "#E2701B" },
+  { value: "8,1k", label: "Instagram-seuraajaa", color: "#FBB405" },
+  { value: "25k", label: "Katselua / kk", color: "#696C46" },
+  { value: "6,2%", label: "Sitoutumisaste", color: "#EDE6D2" },
+];
+
+const platforms = [
+  { name: "YouTube", desc: "Pääkanava — pidemmät videot ja tarinat.", reach: "12,4k", color: "#911B1B" },
+  { name: "Instagram", desc: "Kuvat ja storyt, aktiivisin some-kanava.", reach: "8,1k", color: "#E2701B" },
+  { name: "Threads", desc: "Reaaliaikaista jutustelua ja pyöräilyhuumoria.", reach: "3,4k", color: "#FBB405" },
+  { name: "TikTok", desc: "Lyhytvideoita ja klippejä.", reach: "2,1k", color: "#696C46" },
+];
+
+const offers = [
+  { n: "01", title: "Integroitu maininta", desc: "Luonteva, kanavan henkeen istuva maininta osana videon tarinaa. Ei tuputusta — vain jos tuote on aidosti hyvä." },
+  { n: "02", title: "Dedikoitu video", desc: "Kokonainen video tuotteen tai palvelun ympärillä: testi, matka tai projekti, jossa brändi on pääosassa." },
+  { n: "03", title: "Some-kampanja", desc: "Postaukset ja storyt Instagramissa, Threadsissa ja TikTokissa — yksittäin tai osana isompaa pakettia." },
+];
+
+const logos = ["[ logo ]", "[ logo ]", "[ logo ]", "[ logo ]", "[ logo ]"];
+---
+
+<Layout title="Yhteistyöt — Kampiapina" description="Kampiapina tavoittaa aidon, sitoutuneen pyöräily-yleisön Suomessa. Tehdään diili joka istuu kanavan henkeen.">
+  <Nav active="yhteistyot" />
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="hero__text">
+      <div class="hero__glow"></div>
+      <div class="hero__inner">
+        <div class="eyebrow">Yhteistyöt &amp; media</div>
+        <h1 class="hero__title">Tehdään<br />diili</h1>
+        <p class="hero__body">
+          Kampiapina tavoittaa aidon, sitoutuneen pyöräily-yleisön Suomessa. Jos
+          brändisi puhuttelee pyöräileviä ihmisiä, jutellaan — teen mielelläni
+          yhteistyötä joka istuu kanavan henkeen (eli on rehellistä ja hauskaa).
+        </p>
+        <a href="mailto:jaakko@kampiapina.com" class="btn btn--primary">Ota yhteyttä →</a>
+      </div>
+    </div>
+    <div class="hero__media">
+      <span class="placeholder">[ KUVA ]</span>
+    </div>
+  </div>
+
+  <!-- audience stats -->
+  <div class="audience">
+    <div class="audience__label">
+      Yleisö pähkinänkuoressa
+      <span class="audience__hint">· päivitä luvut omilla tilastoillasi</span>
+    </div>
+    <div class="stat-grid">
+      {
+        stats.map((stat) => (
+          <div class="stat-card">
+            <div class="stat-card__num" style={`color:${stat.color};`}>{stat.value}</div>
+            <div class="stat-card__label">{stat.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- platform breakdown -->
+  <div class="platforms-wrap">
+    <div class="platforms">
+      {
+        platforms.map((p) => (
+          <div class="platform">
+            <div class="platform__name">
+              <span class="platform__dot" style={`background:${p.color};`} />
+              <span class="platform__title">{p.name}</span>
+            </div>
+            <div class="platform__desc">{p.desc}</div>
+            <div class="platform__reach">{p.reach}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- what I offer -->
+  <div class="offers-section">
+    <div class="offers__head">
+      <h2 class="offers__title">Mitä tarjoan</h2>
+      <span class="offers__aside">Räätälöidään aina yhdessä.</span>
+    </div>
+    <div class="offer-grid">
+      {
+        offers.map((o) => (
+          <div class="offer">
+            <div class="offer__n">{o.n}</div>
+            <h3 class="offer__title">{o.title}</h3>
+            <p class="offer__desc">{o.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- past collabs -->
+  <div class="collabs">
+    <div class="collabs__label">Aiempia yhteistöitä</div>
+    <div class="logo-grid">
+      {logos.map((l) => <div class="logo"><span class="logo__ph">{l}</span></div>)}
+    </div>
+  </div>
+
+  <!-- contact CTA -->
+  <div class="cta">
+    <div>
+      <h2 class="cta__title">Jutellaan lisää</h2>
+      <p class="cta__desc">
+        Kerro lyhyesti brändistäsi ja ideastasi, niin palaan asiaan. Lähetän
+        pyydettäessä tarkemman mediakortin ja hinnaston.
+      </p>
+    </div>
+    <div class="cta__actions">
+      <a href="mailto:jaakko@kampiapina.com" class="cta__primary">jaakko@kampiapina.com</a>
+      <a href="https://www.instagram.com/kampiapina/" class="cta__ghost">DM @kampiapina</a>
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
+
+<style>
+  .eyebrow {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 18px;
+  }
+  .placeholder {
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.12em;
+    color: rgba(237, 230, 210, 0.5);
+    font-size: 13px;
+    border: 1px dashed rgba(237, 230, 210, 0.35);
+    padding: 9px 15px;
+  }
+
+  /* hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    align-items: stretch;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    background: #191a10;
+  }
+  .hero__text {
+    position: relative;
+    padding: 72px 46px 60px;
+    overflow: hidden;
+  }
+  .hero__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(110% 120% at 85% 10%, rgba(226, 112, 27, 0.16), transparent 55%);
+  }
+  .hero__inner {
+    position: relative;
+    max-width: 560px;
+  }
+  .hero__title {
+    font-weight: 900;
+    font-size: 82px;
+    line-height: 0.9;
+    margin: 0 0 24px;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  .hero__body {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 0 32px;
+    color: #cfc7ad;
+    font-weight: 500;
+  }
+  .hero__media {
+    position: relative;
+    min-height: 420px;
+    background: #20220f;
+    background-image: repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.35) 0 2px, transparent 2px 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid rgba(237, 230, 210, 0.1);
+  }
+
+  .btn {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .btn--primary {
+    background: #911b1b;
+    color: #ede6d2;
+  }
+  .btn--primary:hover {
+    background: #a51f1f;
+  }
+
+  /* audience */
+  .audience {
+    padding: 60px 46px 20px;
+  }
+  .audience__label {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-bottom: 26px;
+  }
+  .audience__hint {
+    color: #5f6247;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 44px;
+  }
+  .stat-card {
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    background: #191a10;
+    padding: 30px 26px;
+  }
+  .stat-card__num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 60px;
+    line-height: 0.95;
+  }
+  .stat-card__label {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-top: 8px;
+  }
+
+  /* platforms */
+  .platforms-wrap {
+    padding: 0 46px 60px;
+  }
+  .platforms {
+    border: 1px solid rgba(237, 230, 210, 0.12);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .platform {
+    display: grid;
+    grid-template-columns: 180px 1fr 140px;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 30px;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.08);
+    background: #191a10;
+  }
+  .platform:last-child {
+    border-bottom: none;
+  }
+  .platform__name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .platform__dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+  .platform__title {
+    font-weight: 800;
+    font-size: 17px;
+  }
+  .platform__desc {
+    font-size: 14px;
+    color: #a8a488;
+    font-weight: 500;
+  }
+  .platform__reach {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    text-align: right;
+    color: #ede6d2;
+  }
+
+  /* offers */
+  .offers-section {
+    padding: 8px 46px 60px;
+  }
+  .offers__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 24px;
+  }
+  .offers__title {
+    font-weight: 900;
+    font-size: 44px;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .offers__aside {
+    color: #8f9270;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .offer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .offer {
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    background: #191a10;
+    padding: 30px 28px;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+  }
+  .offer__n {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: #e2701b;
+    margin-bottom: 14px;
+  }
+  .offer__title {
+    font-weight: 800;
+    font-size: 21px;
+    margin: 0 0 12px;
+  }
+  .offer__desc {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    color: #a8a488;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  /* collabs */
+  .collabs {
+    padding: 8px 46px 64px;
+  }
+  .collabs__label {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-bottom: 24px;
+  }
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  .logo {
+    aspect-ratio: 5 / 3;
+    border: 1px dashed rgba(237, 230, 210, 0.2);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #191a10;
+  }
+  .logo__ph {
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.1em;
+    color: rgba(237, 230, 210, 0.4);
+    font-size: 12px;
+  }
+
+  /* cta */
+  .cta {
+    margin: 0 46px 72px;
+    background: linear-gradient(100deg, #911b1b, #6d1414);
+    border-radius: 4px;
+    padding: 52px 46px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 34px;
+    flex-wrap: wrap;
+  }
+  .cta__title {
+    font-weight: 900;
+    font-size: 40px;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+  }
+  .cta__desc {
+    margin: 0;
+    color: #f0d5d5;
+    font-size: 16px;
+    max-width: 520px;
+    font-weight: 500;
+  }
+  .cta__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cta__primary {
+    background: #ede6d2;
+    color: #911b1b;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border-radius: 2px;
+    text-align: center;
+  }
+  .cta__ghost {
+    color: #ede6d2;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+    border: 1px solid rgba(237, 230, 210, 0.4);
+    padding: 14px 30px;
+    border-radius: 2px;
+  }
+  .cta__ghost:hover {
+    border-color: rgba(237, 230, 210, 0.8);
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+    .hero__media {
+      min-height: 280px;
+      border-left: none;
+      border-top: 1px solid rgba(237, 230, 210, 0.1);
+    }
+    .hero__title {
+      font-size: 64px;
+    }
+    .stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .offer-grid {
+      grid-template-columns: 1fr;
+    }
+    .logo-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .hero__text {
+      padding: 48px 24px;
+    }
+    .hero__title {
+      font-size: 52px;
+    }
+    .audience,
+    .platforms-wrap,
+    .offers-section,
+    .collabs {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .stat-grid {
+      grid-template-columns: 1fr;
+    }
+    .platform {
+      grid-template-columns: 1fr auto;
+      gap: 8px 16px;
+    }
+    .platform__desc {
+      grid-column: 1 / -1;
+      order: 3;
+    }
+    .offers__head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .logo-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .cta {
+      margin: 0 24px 48px;
+      padding: 40px 28px;
+    }
+    .cta__actions {
+      width: 100%;
+    }
+  }
+</style>

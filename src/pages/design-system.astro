@@ -1,0 +1,664 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+const palette = [
+  { name: "Punanen", hex: "#911B1B", role: "Pääväri" },
+  { name: "Oranssi", hex: "#E2701B", role: "Korostus" },
+  { name: "Keltanen", hex: "#FBB405", role: "Highlight" },
+  { name: "Vihreä", hex: "#696C46", role: "Maasto / tuki" },
+  { name: "Vaalee keltanen", hex: "#E2CB93", role: "Pehmeä sävy" },
+];
+
+const bases = [
+  { hex: "#15160E", label: "Pohja #15160E", border: true },
+  { hex: "#191A10", label: "Paneeli #191A10", border: true },
+  { hex: "#EDE6D2", label: "Teksti #EDE6D2", border: false },
+  { hex: "#8f9270", label: "Vaimennettu #8F9270", border: false },
+];
+---
+
+<Layout title="Design System — Kampiapina" description="Rakennuspalikat Kampiapinan sivustolle. Tumma erämaa-teema, Montserrat-otsikot, punainen pääväri ja oranssi korostus.">
+  <!-- header -->
+  <div class="ds-header">
+    <div class="ds-header__kicker">Kampiapina · Rugged Trail</div>
+    <h1 class="ds-header__title">Design System</h1>
+    <p class="ds-header__lead">
+      Rakennuspalikat Kampiapinan sivustolle. Tumma erämaa-teema,
+      Montserrat-otsikot, punainen pääväri ja oranssi korostus.
+    </p>
+  </div>
+
+  <div class="ds-wrap">
+    <!-- COLOR -->
+    <section class="ds-block">
+      <div class="ds-num">01 — Väripaletti</div>
+      <div class="palette">
+        {
+          palette.map((c) => (
+            <div class="swatch">
+              <div class="swatch__chip" style={`background:${c.hex};`} />
+              <div class="swatch__meta">
+                <div class="swatch__name">{c.name}</div>
+                <div class="swatch__hex">{c.hex}</div>
+                <div class="swatch__role">{c.role}</div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="base-row">
+        {
+          bases.map((b) => (
+            <div class="base-chip">
+              <span class="base-chip__dot" style={`background:${b.hex};${b.border ? "border:1px solid rgba(237,230,210,.2);" : ""}`} />
+              <span>{b.label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- TYPE -->
+    <section class="ds-block">
+      <div class="ds-num">02 — Typografia</div>
+      <div class="type-grid">
+        <div>
+          <div class="type-label">Montserrat</div>
+          <div class="type-row">
+            <div class="type-display">Morjesta</div>
+            <div class="type-caption">Display · 900 · uppercase · -0.02em</div>
+          </div>
+          <div class="type-row">
+            <div class="type-h2">Otsikko taso 2</div>
+            <div class="type-caption">Heading · 800</div>
+          </div>
+          <div>
+            <div class="type-body">
+              Leipäteksti pysyy rauhallisena ja luettavana. Montserrat 500
+              rivinvälillä 1.7 kantaa pidemmätkin pätkät mukavasti.
+            </div>
+            <div class="type-caption">Body · 500 · 16/1.7</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-label">Barlow Condensed — numerot &amp; statsit</div>
+          <div class="num-row">
+            <div class="num" style="color:#E2701B;">130</div>
+            <div class="num" style="color:#FBB405;">8</div>
+            <div class="num" style="color:#696C46;">∞</div>
+          </div>
+          <div class="eyebrow-demo">
+            <span class="eyebrow-demo__line"></span>Eyebrow-tyyli
+          </div>
+          <div class="type-caption" style="margin-top:20px;">
+            Käytetään stats-lukuihin ja korostettuihin numeroihin.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section class="ds-block">
+      <div class="ds-num">03 — Painikkeet</div>
+      <div class="btn-row">
+        <a href="#" class="b-primary">▶ Katso YouTubessa</a>
+        <a href="#" class="b-secondary">Toissijainen</a>
+        <a href="#" class="b-text">Tekstilinkki →</a>
+        <a href="#" class="b-accent">Korostus</a>
+      </div>
+    </section>
+
+    <!-- BADGES -->
+    <section class="ds-block">
+      <div class="ds-num">04 — Merkit &amp; tunnisteet</div>
+      <div class="badge-row">
+        <span class="bg-eyebrow"><span class="bg-eyebrow__line"></span>Eyebrow</span>
+        <span class="bg-new">Uusi</span>
+        <span class="bg-archive">Arkisto</span>
+        <span class="bg-collab">Yhteistyö</span>
+        <span class="bg-play">▶</span>
+      </div>
+    </section>
+
+    <!-- CARDS -->
+    <section class="ds-block">
+      <div class="ds-num">05 — Kortit</div>
+      <div class="card-grid">
+        <div>
+          <div class="card-kicker">Videokortti</div>
+          <a href="#" class="dc-video">
+            <div class="dc-video__thumb">
+              <span class="dc-video__n">01</span>
+              <span class="dc-video__play">▶</span>
+            </div>
+            <div class="dc-video__body">
+              <h3 class="dc-video__title">Videon otsikko</h3>
+              <p class="dc-video__desc">Lyhyt kuvaus videosta ja siitä mitä katsoja saa.</p>
+            </div>
+          </a>
+        </div>
+        <div>
+          <div class="card-kicker">Some-ruutu</div>
+          <a href="#" class="dc-social">
+            <span class="dc-social__dot"></span>
+            <span class="dc-social__name">Instagram</span>
+            <span class="dc-social__note">Lyhyt sävykäs kuvaus kanavasta.</span>
+          </a>
+        </div>
+        <div>
+          <div class="card-kicker">Stat-lohko</div>
+          <div class="dc-stat">
+            <div class="dc-stat__num">12,4k</div>
+            <div class="dc-stat__label">Tilaajaa</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLACEHOLDER + PATTERN -->
+    <section class="ds-block">
+      <div class="ds-num">06 — Kuvapaikat &amp; tekstuuri</div>
+      <div class="texture-grid">
+        <div class="texture texture--topo">
+          <span class="texture__label">[ TOPO-TEKSTUURI ]</span>
+        </div>
+        <div class="texture texture--glow">
+          <span class="texture__label">[ HEHKU-OVERLAY ]</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPONENTS IN CONTEXT -->
+    <section class="ds-block ds-block--last">
+      <div class="ds-num">07 — Navigaatio &amp; footer</div>
+      <div class="context-frame">
+        <Nav active="etusivu" />
+      </div>
+      <div class="context-frame">
+        <Footer />
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  :global(body) {
+    background: #15160e;
+  }
+
+  .ds-header {
+    padding: 60px 56px 46px;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    background: #191a10;
+  }
+  .ds-header__kicker {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 16px;
+  }
+  .ds-header__title {
+    font-weight: 900;
+    font-size: 64px;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  .ds-header__lead {
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 0;
+    color: #a8a488;
+    font-weight: 500;
+  }
+
+  .ds-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 56px 80px;
+  }
+  .ds-block {
+    padding: 56px 0 46px;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.1);
+  }
+  .ds-block--last {
+    border-bottom: none;
+    padding-bottom: 20px;
+  }
+  .ds-num {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-bottom: 24px;
+  }
+
+  /* palette */
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    margin-bottom: 26px;
+  }
+  .swatch {
+    border: 1px solid rgba(237, 230, 210, 0.12);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .swatch__chip {
+    height: 110px;
+  }
+  .swatch__meta {
+    padding: 14px 14px 16px;
+    background: #191a10;
+  }
+  .swatch__name {
+    font-weight: 800;
+    font-size: 15px;
+  }
+  .swatch__hex {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    color: #8f9270;
+    margin-top: 3px;
+  }
+  .swatch__role {
+    font-size: 11px;
+    color: #8f9270;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .base-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .base-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #191a10;
+    border: 1px solid rgba(237, 230, 210, 0.12);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .base-chip__dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+
+  /* type */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  .type-label {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e2701b;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .type-row {
+    border-bottom: 1px solid rgba(237, 230, 210, 0.1);
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+  .type-display {
+    font-weight: 900;
+    font-size: 52px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .type-h2 {
+    font-weight: 800;
+    font-size: 28px;
+  }
+  .type-body {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #cfc7ad;
+  }
+  .type-caption {
+    font-size: 12px;
+    color: #8f9270;
+    margin-top: 8px;
+  }
+  .num-row {
+    display: flex;
+    gap: 24px;
+    align-items: baseline;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.1);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  .num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 0.9;
+  }
+  .eyebrow-demo {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .eyebrow-demo__line {
+    display: inline-block;
+    width: 34px;
+    height: 2px;
+    background: #e2701b;
+    margin-right: 8px;
+  }
+
+  /* buttons */
+  .btn-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .b-primary {
+    background: #911b1b;
+    color: #ede6d2;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border-radius: 2px;
+  }
+  .b-secondary {
+    color: #ede6d2;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 28px;
+    border: 1px solid rgba(237, 230, 210, 0.4);
+    border-radius: 2px;
+  }
+  .b-text {
+    color: #ede6d2;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 15px;
+    border-bottom: 2px solid #e2701b;
+    padding-bottom: 5px;
+  }
+  .b-accent {
+    background: #e2701b;
+    color: #15160e;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border-radius: 2px;
+  }
+
+  /* badges */
+  .badge-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .bg-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+  }
+  .bg-eyebrow__line {
+    width: 34px;
+    height: 2px;
+    background: #e2701b;
+  }
+  .bg-new {
+    background: rgba(145, 27, 27, 0.9);
+    color: #ede6d2;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 2px;
+  }
+  .bg-archive {
+    border: 1px solid rgba(237, 230, 210, 0.25);
+    color: #a8a488;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 2px;
+  }
+  .bg-collab {
+    background: #fbb405;
+    color: #15160e;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 2px;
+  }
+  .bg-play {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #911b1b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ede6d2;
+  }
+
+  /* cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 26px;
+  }
+  .card-kicker {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-bottom: 12px;
+  }
+  .dc-video {
+    text-decoration: none;
+    color: #ede6d2;
+    display: flex;
+    flex-direction: column;
+  }
+  .dc-video__thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: #20220f;
+    background-image: repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.4) 0 2px, transparent 2px 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dc-video__n {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: rgba(237, 230, 210, 0.85);
+  }
+  .dc-video__play {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(145, 27, 27, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ede6d2;
+  }
+  .dc-video__body {
+    padding: 16px 2px 0;
+  }
+  .dc-video__title {
+    font-weight: 800;
+    font-size: 18px;
+    margin: 0 0 8px;
+  }
+  .dc-video__desc {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    color: #a8a488;
+    font-weight: 500;
+  }
+  .dc-social {
+    text-decoration: none;
+    color: #ede6d2;
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    background: #191a10;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 150px;
+  }
+  .dc-social__dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #696c46;
+  }
+  .dc-social__name {
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .dc-social__note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #a8a488;
+    font-weight: 500;
+  }
+  .dc-stat {
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    background: #191a10;
+    padding: 26px 24px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .dc-stat__num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 1;
+    color: #e2701b;
+  }
+  .dc-stat__label {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8f9270;
+    margin-top: 8px;
+  }
+
+  /* texture */
+  .texture-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .texture {
+    aspect-ratio: 16 / 8;
+    background: #20220f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .texture--topo {
+    background-image:
+      repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.35) 0 2px, transparent 2px 42px),
+      repeating-linear-gradient(65deg, rgba(105, 108, 70, 0.28) 0 2px, transparent 2px 60px);
+  }
+  .texture--glow {
+    background-image: radial-gradient(120% 100% at 75% 15%, rgba(226, 112, 27, 0.18), transparent 55%);
+  }
+  .texture__label {
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.12em;
+    color: rgba(237, 230, 210, 0.5);
+    font-size: 13px;
+    border: 1px dashed rgba(237, 230, 210, 0.35);
+    padding: 9px 15px;
+  }
+
+  /* context frames */
+  .context-frame {
+    border: 1px solid rgba(237, 230, 210, 0.12);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .palette {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .type-grid,
+    .card-grid,
+    .texture-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .ds-header {
+      padding: 44px 24px 32px;
+    }
+    .ds-header__title {
+      font-size: 44px;
+    }
+    .ds-wrap {
+      padding: 0 24px 48px;
+    }
+    .palette {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .num {
+      font-size: 56px;
+    }
+  }
+</style>
