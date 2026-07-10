@@ -1,20 +1,20 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 
 const YT = "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ";
 
-const posts = [
-  { date: "2022", title: "Tubeless-kulttiin liittyminen ja muut huonot päätökset", cat: "Huolto" },
-  { date: "2021", title: "Kaldoaivi Ultra Trail — 130 km erämaata", cat: "Kilpailu" },
-  { date: "2020", title: "Miksi fiksi on lopulta paras arkipyörä", cat: "Mielipide" },
-  { date: "2020", title: "Talvipyöräilyn pieni ja epätieteellinen opas", cat: "Opas" },
-  { date: "2019", title: "Randoällärit — 500 kilometrin unelma ja sen sulaminen", cat: "Tapahtuma" },
-];
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const fmtDate = (d: Date) =>
+  new Intl.DateTimeFormat("fi-FI", { day: "numeric", month: "numeric", year: "numeric" }).format(d);
 ---
 
-<Layout title="Blogi — Kampiapina" description="Vanha blogiarkisto. Ei enää päivity, mutta jutut jäävät talteen. Uudet jutut löytyvät nykyään videoina.">
+<Layout title="Blogi — Kampiapina" description="Vanha blogiarkisto vuosilta 2013–2018. Ei enää päivity, mutta jutut jäävät talteen. Uudet jutut löytyvät nykyään videoina.">
   <div class="page">
     <Nav active="blogi" />
 
@@ -22,7 +22,9 @@ const posts = [
     <div class="header">
       <div class="header__meta">
         <span class="badge">Arkisto</span>
-        <span class="header__note">Ei enää päivity — mutta vanhat jutut jäävät talteen.</span>
+        <span class="header__note">
+          {posts.length} juttua vuosilta 2013–2018 · ei enää päivity, mutta jäävät talteen.
+        </span>
       </div>
       <h1 class="header__title">Blogi</h1>
     </div>
@@ -31,10 +33,10 @@ const posts = [
     <div class="posts">
       {
         posts.map((post) => (
-          <a href="#" class="post">
-            <span class="post__date">{post.date}</span>
-            <span class="post__title">{post.title}</span>
-            <span class="post__cat">{post.cat}</span>
+          <a href={`/blogi/${post.id}`} class="post">
+            <span class="post__date">{fmtDate(post.data.pubDate)}</span>
+            <span class="post__title">{post.data.title}</span>
+            <span class="post__cat">{post.data.category || "Blogi"}</span>
           </a>
         ))
       }
@@ -90,19 +92,19 @@ const posts = [
   }
 
   .posts {
-    max-width: 820px;
+    max-width: 900px;
     margin: 0;
     padding: 20px 46px 64px;
     flex: 1;
   }
   .post {
     display: grid;
-    grid-template-columns: 110px 1fr auto;
+    grid-template-columns: 120px 1fr auto;
     align-items: baseline;
     gap: 28px;
     text-decoration: none;
     color: #ede6d2;
-    padding: 24px 0;
+    padding: 22px 0;
     border-bottom: 1px solid rgba(237, 230, 210, 0.1);
     transition: color 0.15s ease;
   }
@@ -113,8 +115,9 @@ const posts = [
     font-family: "Barlow Condensed", sans-serif;
     font-weight: 600;
     font-size: 15px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     color: #8f9270;
+    white-space: nowrap;
   }
   .post__title {
     font-weight: 700;

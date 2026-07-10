@@ -11,5 +11,9 @@
   },
   "dependencies": {
     "astro": "^5.6.1"
+  },
+  "devDependencies": {
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2"
   }
 }
