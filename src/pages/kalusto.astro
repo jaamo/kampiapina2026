@@ -5,61 +5,79 @@ import Footer from "../components/Footer.astro";
 
 const YT = "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ";
 
-const facts = [
-  { label: "Kotipaikka", value: "Espoo" },
-  { label: "Ammatti", value: "Insinööri" },
-  { label: "Lajit", value: "Maantie · Gravel · Maasto" },
-  { label: "Kalusto", value: "8 pyörää" },
-];
-
 const bikes = [
-  { name: "Surly Straggler", role: "Arkipyörä" },
-  { name: "Pelago Stavanger", role: "Gravel & retkeily" },
-  { name: "Maxx Jagamoasta", role: "Maasto" },
-  { name: "Pelago Sibbo", role: "Maantie" },
-  { name: "Pelago San Sebastian", role: "Fiksi" },
-  { name: "Nishiki Timbuk", role: "Retromaasturi" },
-  { name: "Merida Crossway Striker", role: "Cyclocross-raato" },
-  { name: "KOXX Unicycle", role: "Yksipyöräinen" },
+  {
+    name: "Surly Straggler",
+    role: "Arki",
+    desc: "Uskollinen arkijuhta, joka on kulkenut matkan trendikkäästä sinkulasta hybridiksi.",
+    img: "/bikes/surly-straggler.jpg",
+  },
+  {
+    name: "Pelago Stavanger",
+    role: "Gravel",
+    desc: "Gravel-pyörä. Tälle tulee arkipyörän jälkeen eniten kilsoja. Voi mennä melkeinpä mihin vain.",
+    img: "/bikes/pelago-stavanger.jpg",
+  },
+  {
+    name: "Pelago Sibbo",
+    role: "Brevet",
+    desc: "Sibbo oli pitkään unelmieni pyörä ja tuli talliin 2018. Nykyisellään tämä pyörä on säädetty brevettikäyttöön.",
+    img: "/bikes/pelago-sibbo.jpg",
+  },
+  {
+    name: "Pelago San Sebastian",
+    role: "Fiksi",
+    desc: "Tallissa pitää olla yksi pyörä vain siitä syystä, että sillä ajamisesta tulee hyvä fiilis. Fiksi.",
+    img: "/bikes/pelago-san-sebastian.jpg",
+  },
+  {
+    name: "Van Nicholas Skeiron",
+    role: "Maantie",
+    desc: "Mulle liian hyvä maantietykki. Titaania. Hiilikuitua. Sähkövaihteet. Huhhuh.",
+    img: "/bikes/van-nicholas-skeiron.jpg",
+  },
+  {
+    name: "Trek Roscoe 7",
+    role: "Maasto",
+    desc: "Monikäyttöinen maasturi. Aika vähän tulee kilsoja. Mutta sen verran, että pysyy tallissa.",
+    img: "/bikes/trek-roscoe.jpg",
+  },
+  {
+    name: "Koxx Unicycle",
+    role: "Yksipyöräinen",
+    desc: "Keski-iän lievitystä.",
+    img: null,
+  },
 ];
 ---
 
-<Layout title="Kuka? — Kampiapina" description="Ajokortissa lukee Jaakko Alajoki. Espoolainen insinööri joka pitää pyöräilystä ja kantaa usein videokameraa mukana.">
-  <Nav active="kuka" />
+<Layout title="Kalusto — Kampiapina" description="Kampiavun talli: kahdeksan pyörää jokaiseen keliin ja mielentilaan – maantiestä maastoon ja fiksistä yksipyöräiseen.">
+  <Nav active="kalusto" />
 
   <!-- hero -->
   <div class="hero">
     <div class="hero__text">
-      <div class="eyebrow">Kuka on Kampiapina</div>
-      <h1 class="hero__title">Mitäs<br />ihmettä?</h1>
+      <div class="eyebrow">Kalusto</div>
+      <h1 class="hero__title">Miksi näin<br />monta?</h1>
       <p class="hero__body">
-        Ajokortissa lukee Jaakko Alajoki. Olen tylsä espoolainen insinööri,
-        keski-ikäinen ja pidän pyöräilystä. Pyöräilen arjessa, ajan maantietä,
-        rahistelen gravelia, rytkytän maastossa ja nautin retkistä.
+        En halua omistaa yhtään ylimääräistä pyörää. Silti omistan aika monta
+        pyörää. Ihminen on hyvä keksimään itselleen syitä, miksi juuri nämä
+        pyörät on ehdottoman välttämätöntä omistaa.
       </p>
       <p class="hero__body">
-        Ja hyvin usein kannan videokameraa mukana. Jotkut sanovat sitä
-        pyöräilijäksi, jotkut influensseriksi, jotkut mediaksi, jotkut
-        tubettajaksi. Päätä itse.
+        Kaikille pyörilleni löytyy
+        joku tarkoitus. Tavoitteeni on, että jokaisella pyörällä ajetaan
+        keskimääräistä espoolaista enemmän. Eli parisataa kilometriä.
       </p>
-      <a href={YT} class="btn btn--primary">▶ Katso videoita YouTubessa</a>
+      <p class="hero__body">
+        Arvostan pyörissä kestävyyttä ja helppoa huollettavuutta. Sen vuoksi
+        varastoon on kertynyt terästä.
+      </p>
     </div>
     <div class="hero__media">
+      <img src="/kalusto-hero.jpg" alt="Maantieajoa kesäillassa" class="hero__img" />
       <div class="hero__media-glow"></div>
-      <span class="placeholder">[ PROFIILIKUVA ]</span>
     </div>
-  </div>
-
-  <!-- quick facts -->
-  <div class="facts">
-    {
-      facts.map((f) => (
-        <div class="facts__cell">
-          <div class="facts__label">{f.label}</div>
-          <div class="facts__value">{f.value}</div>
-        </div>
-      ))
-    }
   </div>
 
   <!-- kalusto -->
@@ -76,11 +94,16 @@ const bikes = [
         bikes.map((bike) => (
           <div class="bike-card">
             <div class="bike-card__img">
-              <span class="bike-card__ph">[ kuva ]</span>
+              {bike.img ? (
+                <img src={bike.img} alt={bike.name} class="bike-card__photo" loading="lazy" />
+              ) : (
+                <span class="bike-card__ph">[ kuva ]</span>
+              )}
             </div>
             <div class="bike-card__body">
-              <div class="bike-card__name">{bike.name}</div>
               <div class="bike-card__role">{bike.role}</div>
+              <div class="bike-card__name">{bike.name}</div>
+              <p class="bike-card__desc">{bike.desc}</p>
             </div>
           </div>
         ))
@@ -112,16 +135,6 @@ const bikes = [
     color: #e2701b;
     margin-bottom: 18px;
   }
-  .placeholder {
-    position: relative;
-    font-family: "Barlow Condensed", sans-serif;
-    letter-spacing: 0.12em;
-    color: rgba(237, 230, 210, 0.5);
-    font-size: 13px;
-    border: 1px dashed rgba(237, 230, 210, 0.35);
-    padding: 9px 15px;
-  }
-
   /* hero */
   .hero {
     display: grid;
@@ -155,10 +168,15 @@ const bikes = [
     position: relative;
     min-height: 520px;
     background: #20220f;
-    background-image: repeating-linear-gradient(65deg, rgba(105, 108, 70, 0.35) 0 2px, transparent 2px 40px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
+  }
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 55%;
   }
   .hero__media-glow {
     position: absolute;
@@ -182,31 +200,6 @@ const bikes = [
   }
   .btn--primary:hover {
     background: #a51f1f;
-  }
-
-  /* facts */
-  .facts {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
-  }
-  .facts__cell {
-    padding: 28px 40px;
-    border-right: 1px solid rgba(237, 230, 210, 0.1);
-  }
-  .facts__cell:last-child {
-    border-right: none;
-  }
-  .facts__label {
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #8f9270;
-    margin-bottom: 6px;
-  }
-  .facts__value {
-    font-weight: 800;
-    font-size: 19px;
   }
 
   /* section */
@@ -248,6 +241,7 @@ const bikes = [
     border-color: rgba(226, 112, 27, 0.6);
   }
   .bike-card__img {
+    position: relative;
     aspect-ratio: 4 / 3;
     background: #20220f;
     background-image: repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.4) 0 2px, transparent 2px 30px);
@@ -255,6 +249,14 @@ const bikes = [
     align-items: center;
     justify-content: center;
     border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    overflow: hidden;
+  }
+  .bike-card__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .bike-card__ph {
     font-family: "Barlow Condensed", sans-serif;
@@ -265,17 +267,25 @@ const bikes = [
   .bike-card__body {
     padding: 16px 16px 18px;
   }
-  .bike-card__name {
-    font-weight: 800;
-    font-size: 16px;
-    margin-bottom: 4px;
-  }
   .bike-card__role {
-    font-size: 12px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #e2701b;
     font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .bike-card__name {
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .bike-card__desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #a8a488;
+    font-weight: 500;
   }
 
   /* pyoratori */
@@ -330,12 +340,6 @@ const bikes = [
     .hero__title {
       font-size: 68px;
     }
-    .facts {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .facts__cell:nth-child(2) {
-      border-right: none;
-    }
     .bike-grid {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -346,12 +350,6 @@ const bikes = [
     }
     .hero__title {
       font-size: 52px;
-    }
-    .facts {
-      grid-template-columns: 1fr;
-    }
-    .facts__cell {
-      border-right: none;
     }
     .section {
       padding: 48px 24px;

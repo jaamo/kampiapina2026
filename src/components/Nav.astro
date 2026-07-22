@@ -1,13 +1,13 @@
 ---
 interface Props {
-  active?: "etusivu" | "kuka" | "blogi" | "yhteistyot";
+  active?: "etusivu" | "kalusto" | "blogi" | "yhteistyot";
 }
 
 const { active = "etusivu" } = Astro.props;
 
 const links = [
   { label: "Etusivu", href: "/", key: "etusivu" },
-  { label: "Kuka?", href: "/kuka", key: "kuka" },
+  { label: "Kalusto", href: "/kalusto", key: "kalusto" },
   { label: "Blogi", href: "/blogi", key: "blogi" },
   { label: "Yhteistyöt", href: "/yhteistyot", key: "yhteistyot" },
 ];
