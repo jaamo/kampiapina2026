@@ -29,15 +29,17 @@ const videos = [
   },
 ];
 
+import { socialIcons } from "../data/socialIcons.js";
+
 const socials = [
-  { name: "Instagram", note: "Lyhytvideoita ja stooreja. YouTuben jälkeen aktiivisin.", url: "https://www.instagram.com/kampiapina/" },
-  { name: "Threads", note: "Zuckerbergin oma pikku Twitter. Mukana jutustelemassa.", url: "https://www.threads.net/@kampiapina" },
-  { name: "TikTok", note: "Kiinalaisten aivomätäsome. Postailen lyhytvideot myös tänne.", url: "https://www.tiktok.com/@kampiapina" },
-  { name: "Discord", note: "Pyöräily-serveri. Reaaliaikaista jutustelua porukan kanssa. Yleistä pyöräilyjuttua, ei mikään fanikerho.", url: "https://discord.gg/j2J5aZGXAC" },
-  { name: "Strava", note: "Jakaakseen jotain on ensin hikoiltava.", url: "https://www.strava.com/athletes/2914941" },
-  { name: "Bluesky", note: "Vähä ku Twitter, mut hiljaisempi. Mukana.", url: "https://www.strava.com/athletes/2914941" },
-  { name: "Mastodon", note: "Sosiaalisen median Linux. Outo ja vähän vaikea.", url: "https://mastodontti.fi/@kampiapina" },
-  { name: "jaakko@alajoki.fi", note: "Ei tää oo mikään some! Mutta sähköpostikin tavoittaa.", url: "mailto:jaakko@alajoki.fi" },
+  { name: "Instagram", icon: "instagram", note: "Lyhytvideoita ja stooreja. YouTuben jälkeen aktiivisin.", url: "https://www.instagram.com/kampiapina/" },
+  { name: "Threads", icon: "threads", note: "Zuckerbergin oma pikku Twitter. Mukana jutustelemassa.", url: "https://www.threads.net/@kampiapina" },
+  { name: "TikTok", icon: "tiktok", note: "Kiinalaisten aivomätäsome. Postailen lyhytvideot myös tänne.", url: "https://www.tiktok.com/@kampiapina" },
+  { name: "Discord", icon: "discord", note: "Pyöräily-serveri. Reaaliaikaista jutustelua porukan kanssa. Yleistä pyöräilyjuttua, ei mikään fanikerho.", url: "https://discord.gg/j2J5aZGXAC" },
+  { name: "Strava", icon: "strava", note: "Jakaakseen jotain on ensin hikoiltava.", url: "https://www.strava.com/athletes/2914941" },
+  { name: "Bluesky", icon: "bluesky", note: "Vähä ku Twitter, mut hiljaisempi. Mukana.", url: "https://bsky.app/profile/kampiapina.bsky.social" },
+  { name: "Mastodon", icon: "mastodon", note: "Sosiaalisen median Linux. Outo ja vähän vaikea.", url: "https://mastodontti.fi/@kampiapina" },
+  { name: "jaakko@alajoki.fi", icon: "email", note: "Ei tää oo mikään some! Mutta sähköpostikin tavoittaa.", url: "mailto:jaakko@alajoki.fi" },
 ];
 ---
 
@@ -153,7 +155,9 @@ const socials = [
       {
         socials.map((social) => (
           <a href={social.url} class="social-tile">
-            <span class="social-tile__dot" />
+            <svg class="social-tile__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d={socialIcons[social.icon]} />
+            </svg>
             <span class="social-tile__name">{social.name}</span>
             <span class="social-tile__note">{social.note}</span>
           </a>
@@ -364,7 +368,7 @@ const socials = [
   }
   .video-card__thumb {
     position: relative;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     background: #20220f;
     background-image: repeating-linear-gradient(115deg, rgba(105, 108, 70, 0.4) 0 2px, transparent 2px 32px);
     display: flex;
@@ -595,11 +599,14 @@ const socials = [
     border: 1px solid #e2701b;
     background: #1e1f12;
   }
-  .social-tile__dot {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #696c46;
+  .social-tile__icon {
+    width: 28px;
+    height: 28px;
+    fill: #e2701b;
+    transition: fill 0.15s ease;
+  }
+  .social-tile:hover .social-tile__icon {
+    fill: #f0842e;
   }
   .social-tile__name {
     font-weight: 800;

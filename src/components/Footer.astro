@@ -3,14 +3,17 @@ const pages = [
   { label: "Etusivu", href: "/" },
   { label: "Kalusto", href: "/kalusto" },
   { label: "Blogi", href: "/blogi" },
-  { label: "Yhteistyöt", href: "/yhteistyot" },
 ];
 
 const socials = [
   { label: "YouTube", href: "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ" },
   { label: "Instagram", href: "https://www.instagram.com/kampiapina/" },
   { label: "Threads", href: "https://www.threads.net/@kampiapina" },
+  { label: "TikTok", href: "https://www.tiktok.com/@kampiapina" },
   { label: "Discord", href: "https://discord.gg/j2J5aZGXAC" },
+  { label: "Strava", href: "https://www.strava.com/athletes/2914941" },
+  { label: "Bluesky", href: "https://bsky.app/profile/kampiapina.bsky.social" },
+  { label: "Mastodon", href: "https://mastodontti.fi/@kampiapina" },
 ];
 ---
 
@@ -20,10 +23,6 @@ const socials = [
       <div class="ka-footer__brand">
         <img src="/logo-white.svg" alt="Kampiapina" class="ka-footer__logo" />
       </div>
-      <p class="ka-footer__blurb">
-        Allekirjoittaneen pyöräilypersoonallisuus. Maantietä, gravelia, maastoa
-        ja retkiä — usein videokamera mukana. Morjesta pöytään.
-      </p>
     </div>
     <div>
       <div class="ka-footer__heading">Sivut</div>
@@ -61,19 +60,11 @@ const socials = [
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 16px;
   }
   .ka-footer__logo {
-    height: 56px;
+    height: 104px;
     width: auto;
     display: block;
-  }
-  .ka-footer__blurb {
-    font-size: 14px;
-    line-height: 1.6;
-    max-width: 340px;
-    margin: 0;
-    font-weight: 500;
   }
   .ka-footer__heading {
     font-size: 12px;
