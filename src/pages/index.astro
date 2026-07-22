@@ -8,27 +8,36 @@ const YT = "https://www.youtube.com/channel/UC2Prp3t7Ol-a041FXTyCzNQ";
 const videos = [
   {
     n: "01",
-    title: "Kaldoaivi Ultra Trail",
-    desc: "Miltä maistuu 130 kilometriä maastopyöräilyä Suomen pohjoisimmassa erämaassa? Ja miten lajiharjoittelun laiminlyönti näkyy kilpailussa?",
+    id: "yL1HkG9ALkU",
+    title: "Ruska 2025",
+    desc: "2050 kilometriä seitsemässä päivässä.",
+    url: "https://youtu.be/yL1HkG9ALkU",
   },
   {
     n: "02",
-    title: "Tubeless epäopetusvideo",
-    desc: "Vuonna 2022 päätin luopua sisärenkaista ja liittyä tubeless-kulttiin. Kaikki ei taaskaan mennyt ihan suunnitelmien mukaan.",
+    id: "HaD2gFZWWDg",
+    title: "Uutisia pakoon metsään",
+    desc: "Pakomatka pyörän selässä korpimaisemiin.",
+    url: "https://youtu.be/HaD2gFZWWDg",
   },
   {
     n: "03",
-    title: "Randoällärit",
-    desc: "Unelmana ajaa 500 km vuorokaudessa. Muistoksi jäi mentaalinen sulaminen itäisen Uudenmaan sydämessä.",
+    id: "e1aoVYaqGyU",
+    title: "Tubeless epäopetusvideo",
+    desc: "Fatbiken litkutus – näin sen teet (tai et).",
+    url: "https://www.youtube.com/watch?v=e1aoVYaqGyU",
   },
 ];
 
 const socials = [
-  { name: "Instagram", note: "Kivoja pyöräilykuvia ja stooreja. YouTuben jälkeen aktiivisin.", url: "https://www.instagram.com/kampiapina/" },
-  { name: "Threads", note: "Zuckerbergin oma pikku Twitter. Käyn täällä usein.", url: "https://www.threads.net/@kampiapina" },
-  { name: "TikTok", note: "Lyhytvideoita — jos tykkäät jakaa datasi Kiinan kanssa.", url: "https://www.tiktok.com/@kampiapina" },
-  { name: "Discord", note: "Pyöräily-serveri. Reaaliaikaista jutustelua porukan kanssa.", url: "https://discord.gg/j2J5aZGXAC" },
+  { name: "Instagram", note: "Lyhytvideoita ja stooreja. YouTuben jälkeen aktiivisin.", url: "https://www.instagram.com/kampiapina/" },
+  { name: "Threads", note: "Zuckerbergin oma pikku Twitter. Mukana jutustelemassa.", url: "https://www.threads.net/@kampiapina" },
+  { name: "TikTok", note: "Kiinalaisten aivomätäsome. Postailen lyhytvideot myös tänne.", url: "https://www.tiktok.com/@kampiapina" },
+  { name: "Discord", note: "Pyöräily-serveri. Reaaliaikaista jutustelua porukan kanssa. Yleistä pyöräilyjuttua, ei mikään fanikerho.", url: "https://discord.gg/j2J5aZGXAC" },
   { name: "Strava", note: "Jakaakseen jotain on ensin hikoiltava.", url: "https://www.strava.com/athletes/2914941" },
+  { name: "Bluesky", note: "Vähä ku Twitter, mut hiljaisempi. Mukana.", url: "https://www.strava.com/athletes/2914941" },
+  { name: "Mastodon", note: "Sosiaalisen median Linux. Outo ja vähän vaikea.", url: "https://mastodontti.fi/@kampiapina" },
+  { name: "jaakko@alajoki.fi", note: "Ei tää oo mikään some! Mutta sähköpostikin tavoittaa.", url: "mailto:jaakko@alajoki.fi" },
 ];
 ---
 
@@ -38,7 +47,7 @@ const socials = [
   <!-- hero -->
   <div class="hero">
     <img
-      src="https://kampiapina.com/wp-content/uploads/2023/12/2023-maantiekauden-avaus.jpg"
+      src="/2023-maantiekauden-avaus.jpg"
       alt=""
       class="hero__img"
     />
@@ -48,12 +57,11 @@ const socials = [
     <div class="hero__inner">
       <h1 class="hero__title">Morjesta<br />pöytään</h1>
       <p class="hero__lead">
-        Pyöräilyä maalta, maantieltä ja erämaasta. Kampiapina kantaa
-        videokameraa sinne minne muut eivät jaksa polkea. Tule mukaan.
+        Jos pyöräilyhommat kiinnostaa, niin olet tullut oikeaan paikkaan! Kampiapina on allekirjoittaneen pyöräilypersoonallisuus. Jotkut sanovat sitä kaveriksi, jotkut pyöräilijäksi, jotkut influensseriksi, jotkut mediaksi, jotkut tubettajaksi. Päätä itse!
       </p>
       <div class="hero__actions">
         <a href={YT} class="btn btn--primary">▶ Katso YouTubessa</a>
-        <a href="/kuka" class="btn btn--ghost">Kuka mä oon?</a>
+        <a href="/kuka" class="btn btn--ghost">Kuka?</a>
       </div>
     </div>
   </div>
@@ -61,12 +69,12 @@ const socials = [
   <!-- stats bar -->
   <div class="stats">
     <div class="stats__cell">
-      <div class="stats__num" style="color:#E2701B;">8</div>
+      <div class="stats__num" style="color:#E2701B;">7</div>
       <div class="stats__label">Pyörää tallissa</div>
     </div>
     <div class="stats__cell">
-      <div class="stats__num" style="color:#FBB405;">130<span style="font-size:24px;">km</span></div>
-      <div class="stats__label">Pisin maastoetappi</div>
+      <div class="stats__num" style="color:#FBB405;">7000<span style="font-size:24px;">km</span></div>
+      <div class="stats__label">Vuosittain</div>
     </div>
     <div class="stats__cell">
       <div class="stats__num" style="color:#696C46;">7</div>
@@ -74,7 +82,7 @@ const socials = [
     </div>
     <div class="stats__cell">
       <div class="stats__num" style="color:#EDE6D2;">∞</div>
-      <div class="stats__label">Huonoja päätöksiä</div>
+      <div class="stats__label">huonoja faijavitsejä</div>
     </div>
   </div>
 
@@ -82,7 +90,7 @@ const socials = [
   <div class="section">
     <div class="section__head">
       <div>
-        <div class="eyebrow">Katsotuimmat</div>
+        <div class="eyebrow">Suositellut</div>
         <h2 class="section__title">Parhaat videot</h2>
       </div>
       <a href={YT} class="section__more">Kaikki videot →</a>
@@ -90,8 +98,14 @@ const socials = [
     <div class="video-grid">
       {
         videos.map((video) => (
-          <a href={YT} class="video-card">
+          <a href={video.url} class="video-card" target="_blank" rel="noopener">
             <div class="video-card__thumb">
+              <img
+                src={`/video-thumbs/${video.id}.jpg`}
+                alt={video.title}
+                class="video-card__thumb-img"
+                loading="lazy"
+              />
               <span class="video-card__n">{video.n}</span>
               <span class="video-card__play">▶</span>
             </div>
@@ -108,17 +122,43 @@ const socials = [
   <!-- about -->
   <div class="about">
     <div class="about__text">
-      <div class="eyebrow">Kuka on Kampiapina</div>
-      <h2 class="about__title">Mitäs ihmettä?</h2>
+      <div class="eyebrow">Kuka?</div>
+      <h2 class="about__title">Espoolainen elämäntapapyöräilijä</h2>
       <p class="about__body">
-        Ajokortissa lukee Jaakko Alajoki. Tylsä espoolainen insinööri,
-        keski-ikäinen, ja pitää pyöräilystä. Arkipyöräilyä, maantietä, gravelia,
-        maastoa ja retkiä — hyvin usein videokamera mukana.
+        Ajokortissani lukee Jaakko Alajoki. Pidän pyöräilystä lähes sen kaikissa muodoissaan. Maantie-, sora- ja maastopyöräily maistuu. Pidän pyöräretkeilystä 
+        ja ultrapyöräily eli randonneur-pyöräily maistuu erityisesti. Tykkään myös huoltaa ja rakennella fillareita. Ja videokamera on usein menossa mukana! 
       </p>
       <a href="/kuka" class="link-underline">Koko tarina →</a>
     </div>
     <div class="about__media">
-      <span class="placeholder">[ PROFIILIKUVA ]</span>
+      <img src="/profiilikuva2024.jpg" alt="Jaakko Alajoki" class="about__img" />
+    </div>
+  </div>
+
+  <!-- socials -->
+  <div class="socials">
+    <h2 class="socials__title">Some-kanavat</h2>
+    <p class="socials__sub">YouTube on itselle ykköskanava</p>
+    <a href={YT} class="yt-hero">
+      <div class="yt-hero__icon">▶</div>
+      <div>
+        <div class="yt-hero__name">YouTube</div>
+        <div class="yt-hero__desc">
+          Kaikista eniten aikaa, rakkautta ja haaleaa kahvia kuluu näitä videoita leikellessä.
+        </div>
+      </div>
+      <span class="yt-hero__cta">Katso videoita</span>
+    </a>
+    <div class="social-grid">
+      {
+        socials.map((social) => (
+          <a href={social.url} class="social-tile">
+            <span class="social-tile__dot" />
+            <span class="social-tile__name">{social.name}</span>
+            <span class="social-tile__note">{social.note}</span>
+          </a>
+        ))
+      }
     </div>
   </div>
 
@@ -134,34 +174,6 @@ const socials = [
       <span class="pyoratori__brand">pyoratori.com</span> →
     </span>
   </a>
-
-  <!-- socials -->
-  <div class="socials">
-    <h2 class="socials__title">Some-kanavat</h2>
-    <p class="socials__sub">YouTube ykkösenä — muut tukevat sitä.</p>
-    <a href={YT} class="yt-hero">
-      <div class="yt-hero__icon">▶</div>
-      <div>
-        <div class="yt-hero__name">YouTube</div>
-        <div class="yt-hero__desc">
-          Tää on se juttu, miksi tätä hommaa teen. Jos tsekkaat jotain, tsekkaa
-          tämä.
-        </div>
-      </div>
-      <span class="yt-hero__cta">Tilaa</span>
-    </a>
-    <div class="social-grid">
-      {
-        socials.map((social) => (
-          <a href={social.url} class="social-tile">
-            <span class="social-tile__dot" />
-            <span class="social-tile__name">{social.name}</span>
-            <span class="social-tile__note">{social.note}</span>
-          </a>
-        ))
-      }
-    </div>
-  </div>
 
   <Footer />
 </Layout>
@@ -360,6 +372,13 @@ const socials = [
     justify-content: center;
     overflow: hidden;
   }
+  .video-card__thumb-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .video-card__n {
     position: absolute;
     top: 14px;
@@ -431,10 +450,14 @@ const socials = [
     position: relative;
     min-height: 400px;
     background: #20220f;
-    background-image: repeating-linear-gradient(65deg, rgba(105, 108, 70, 0.35) 0 2px, transparent 2px 40px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
+  }
+  .about__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .link-underline {
     display: inline-block;
@@ -553,7 +576,7 @@ const socials = [
   }
   .social-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
   .social-tile {
