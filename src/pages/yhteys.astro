@@ -2,16 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
-import { socialIcons } from "../data/socialIcons.js";
 
 const email = "jaakko@alajoki.fi";
-
-const channels = [
-  { name: "Instagram", icon: "instagram", handle: "@kampiapina", url: "https://www.instagram.com/kampiapina/" },
-  { name: "Threads", icon: "threads", handle: "@kampiapina", url: "https://www.threads.net/@kampiapina" },
-  { name: "TikTok", icon: "tiktok", handle: "@kampiapina", url: "https://www.tiktok.com/@kampiapina" },
-  { name: "Discord", icon: "discord", handle: "Liity serverille", url: "https://discord.gg/j2J5aZGXAC" },
-];
 ---
 
 <Layout title="Yhteys — Kampiapina" description="Laita viestiä Kampiapinalle. Sähköposti tavoittaa parhaiten: jaakko@alajoki.fi.">
@@ -19,6 +11,7 @@ const channels = [
 
   <!-- hero -->
   <div class="hero">
+    <img src="/profiilikuva2024.jpg" alt="Jaakko Alajoki" class="hero__img" />
     <div class="hero__glow"></div>
     <div class="hero__inner">
       <div class="eyebrow">Yhteys</div>
@@ -28,24 +21,6 @@ const channels = [
         tavoittaa parhaiten. Vastaan kun ehdin.
       </p>
       <a href={`mailto:${email}`} class="hero__email">{email} →</a>
-    </div>
-  </div>
-
-  <!-- other channels -->
-  <div class="channels">
-    <div class="channels__label">Tai muualla</div>
-    <div class="channel-grid">
-      {
-        channels.map((c) => (
-          <a href={c.url} class="channel">
-            <svg class="channel__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d={socialIcons[c.icon]} />
-            </svg>
-            <span class="channel__name">{c.name}</span>
-            <span class="channel__handle">{c.handle}</span>
-          </a>
-        ))
-      }
     </div>
   </div>
 
@@ -66,9 +41,19 @@ const channels = [
   .hero {
     position: relative;
     padding: 88px 46px 80px;
-    background: #191a10;
+    background: #000;
     border-bottom: 1px solid rgba(237, 230, 210, 0.12);
     overflow: hidden;
+  }
+  .hero__img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 55%);
+    mask-image: linear-gradient(to right, transparent, #000 55%);
   }
   .hero__glow {
     position: absolute;
@@ -111,64 +96,13 @@ const channels = [
     background: #a51f1f;
   }
 
-  /* channels */
-  .channels {
-    padding: 56px 46px 72px;
-  }
-  .channels__label {
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #8f9270;
-    margin-bottom: 24px;
-  }
-  .channel-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-  .channel {
-    text-decoration: none;
-    color: #ede6d2;
-    border: 1px solid rgba(237, 230, 210, 0.14);
-    background: #191a10;
-    padding: 24px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-  .channel:hover {
-    border-color: #e2701b;
-    background: #1e1f12;
-  }
-  .channel__icon {
-    width: 28px;
-    height: 28px;
-    fill: #e2701b;
-    transition: fill 0.15s ease;
-  }
-  .channel:hover .channel__icon {
-    fill: #f0842e;
-  }
-  .channel__name {
-    font-weight: 800;
-    font-size: 16px;
-  }
-  .channel__handle {
-    font-size: 13px;
-    color: #a8a488;
-    font-weight: 500;
-  }
-
   /* responsive */
   @media (max-width: 900px) {
     .hero__title {
       font-size: 68px;
     }
-    .channel-grid {
-      grid-template-columns: repeat(2, 1fr);
+    .hero__img {
+      opacity: 0.5;
     }
   }
   @media (max-width: 600px) {
@@ -181,12 +115,6 @@ const channels = [
     .hero__email {
       font-size: 17px;
       padding: 16px 24px;
-    }
-    .channels {
-      padding: 44px 24px 56px;
-    }
-    .channel-grid {
-      grid-template-columns: 1fr;
     }
   }
 </style>
