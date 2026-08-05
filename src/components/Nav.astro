@@ -1,6 +1,6 @@
 ---
 interface Props {
-  active?: "etusivu" | "kalusto" | "blogi" | "kauppa" | "yhteistyot" | "yhteys";
+  active?: "etusivu" | "kalusto" | "blogi" | "yhteistyot" | "yhteys";
 }
 
 const { active = "etusivu" } = Astro.props;
@@ -9,9 +9,15 @@ const links = [
   { label: "Etusivu", href: "/", key: "etusivu" },
   { label: "Kalusto", href: "/kalusto", key: "kalusto" },
   { label: "Blogi", href: "/blogi", key: "blogi" },
-  { label: "Kauppa", href: "/kauppa", key: "kauppa" },
   // { label: "Yhteistyöt", href: "/yhteistyot", key: "yhteistyot" }, // hidden for now
   { label: "Yhteys", href: "/yhteys", key: "yhteys" },
+  // Kauppa pyörii Spreadshopissa, joten linkki vie sivustolta ulos.
+  {
+    label: "Kauppa",
+    href: "https://kampiapina.myspreadshop.fi/",
+    key: "kauppa",
+    external: true,
+  },
 ];
 ---
 
@@ -30,8 +36,26 @@ const links = [
           href={link.href}
           class="ka-nav__link"
           style={`color:${link.key === active ? "#EDE6D2" : "#8f9270"};`}
+          target={link.external ? "_blank" : undefined}
+          rel={link.external ? "noopener" : undefined}
         >
           {link.label}
+          {link.external && (
+            <svg
+              class="ka-nav__ext"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M14 4h6v6" />
+              <path d="M20 4 11 13" />
+              <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+            </svg>
+          )}
         </a>
       ))
     }
@@ -98,12 +122,23 @@ const links = [
     flex: 0 1 auto;
   }
   .ka-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     text-decoration: none;
     white-space: nowrap;
     transition: color 0.15s ease;
   }
   .ka-nav__link:hover {
     color: #ede6d2 !important;
+  }
+  .ka-nav__ext {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    /* Ikoni istuu optisesti paremmin hieman ylempänä kuin versaalit. */
+    margin-top: -1px;
+    opacity: 0.85;
   }
   .ka-nav__yt {
     background: #911b1b;
