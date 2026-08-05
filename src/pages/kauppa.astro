@@ -56,14 +56,35 @@ const shopUrl = "https://kampiapina.myspreadshop.fi/";
   var spread_shop_config = {
     shopName: "kampiapina",
     locale: "fi_FI",
-    prefix: "https://kampiapina.myspreadshop.fi",
+    prefix: "https://shop.myspreadshop.fi",
     baseId: "myShop",
   };
+
+  // Kaupan oma aliverkkotunnus (kampiapina.myspreadshop.fi) ei tarjoile
+  // shopData-rajapintaa lainkaan: se vastaa 404 eikä palauta CORS-otsakkeita.
+  // Vain yleinen shop.myspreadshop.fi tekee sen (Access-Control-Allow-Origin: *).
+  // Shopclient lukee kuitenkin core-vastauksesta shopBaseUrl-kentän, joka osoittaa
+  // aliverkkotunnukseen, ja käyttää sitä seuraaviin hakuihin. Ohjataan ne takaisin.
+  (function () {
+    var from = "https://kampiapina.myspreadshop.fi/kampiapina/shopData/";
+    var to = "https://shop.myspreadshop.fi/kampiapina/shopData/";
+    var original = window.fetch;
+    if (!original) return;
+
+    window.fetch = function (input, init) {
+      if (typeof input === "string" && input.indexOf(from) === 0) {
+        input = to + input.slice(from.length);
+      } else if (input && input.url && input.url.indexOf(from) === 0) {
+        input = new Request(to + input.url.slice(from.length), input);
+      }
+      return original.call(this, input, init);
+    };
+  })();
 </script>
 <script
   is:inline
   type="text/javascript"
-  src="https://kampiapina.myspreadshop.net/js/shopclient.nocache.js"></script>
+  src="https://shop.myspreadshop.fi/shopfiles/shopclient/shopclient.nocache.js"></script>
        
 <script is:inline>
   // Jos shopclient ei saa piirrettyä kauppaa, näytetään linkki kauppaan.
