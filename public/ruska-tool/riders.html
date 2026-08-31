@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruska — Riders</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Ruska <span>ride across Finland</span></h1>
+  <nav><a href="index.html">Editions</a><a href="riders.html" class="on">Riders</a></nav>
+</header>
+<main class="wide">
+  <div class="split">
+    <div>
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="Search riders, bikes, scratch reasons…" autocomplete="off">
+        <button class="chip" id="fCap">Has cap number</button>
+        <button class="chip" id="fNever">Never finished</button>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr>
+            <th class="sortable" data-k="last">Rider <span class="arrow">&#9650;</span></th>
+            <th class="sortable num" data-k="no">Cap <span class="arrow">&#9650;</span></th>
+            <th class="sortable num" data-k="starts">Starts <span class="arrow">&#9650;</span></th>
+            <th class="sortable num" data-k="finished">Finished <span class="arrow">&#9650;</span></th>
+            <th class="sortable num" data-k="dnf">DNF/DNS <span class="arrow">&#9650;</span></th>
+            <th class="sortable num" data-k="first">First <span class="arrow">&#9650;</span></th>
+            <th class="sortable num" data-k="latest">Latest <span class="arrow">&#9650;</span></th>
+            <th>Record</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <footer>165 riders who have ever appeared on a Ruska start list, 2017&ndash;2025.
+        Click a column to sort, a row to open the rider. Search matches names, bikes,
+        scratch reasons and summaries.</footer>
+    </div>
+    <aside id="side"><div class="empty">Select a rider to see their record.</div></aside>
+  </div>
+</main>
+<script src="data.js"></script>
+<script src="riders.js"></script>
+</body>
+</html>

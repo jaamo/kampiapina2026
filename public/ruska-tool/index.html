@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruska — Editions</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Ruska <span>ride across Finland</span></h1>
+  <nav><a href="index.html" class="on">Editions</a><a href="riders.html">Riders</a></nav>
+</header>
+<main>
+  <div class="stats" id="stats"></div>
+  <div class="card">
+    <table>
+      <thead><tr>
+        <th>Year</th><th>Route</th>
+        <th class="num">Entries</th><th class="num">Started</th>
+        <th class="num">Finished</th><th class="num">Scratched</th>
+        <th class="num">DNS</th><th class="num">Late</th>
+        <th>Finish rate</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <footer>Click any edition for its controls, description and specialities.
+    Finish rate is finishers as a share of <em>starters</em>, so riders who never
+    started are excluded from the denominator.</footer>
+</main>
+<script src="data.js"></script>
+<script src="editions.js"></script>
+</body>
+</html>
