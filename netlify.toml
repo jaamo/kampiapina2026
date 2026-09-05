@@ -1,0 +1,5 @@
+# Astron Netlify-adapteri kirjoittaa funktiot .netlify/v1-hakemistoon ja
+# staattiset sivut dist/-hakemistoon.
+[build]
+  command = "npm run build"
+  publish = "dist"

@@ -11,3 +11,5 @@ npm-debug.log*
 .env.production
 # macOS-specific files
 .DS_Store
+# netlify adapter output
+.netlify/

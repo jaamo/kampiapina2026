@@ -2,11 +2,13 @@
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title = "Kampiapina — Morjesta pöytään",
   description = "Pyöräilyä maalta, maantieltä ja erämaasta. Kampiapina kantaa videokameraa sinne minne muut eivät jaksa polkea.",
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -17,6 +19,7 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/logo-white.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,6 +27,8 @@ const {
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Sivukohtaiset head-lisäykset, esim. vain yhdellä sivulla tarvittava fontti. -->
+    <slot name="head" />
   </head>
   <body>
     <slot />

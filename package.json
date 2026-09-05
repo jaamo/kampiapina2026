@@ -10,6 +10,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/netlify": "^6.6.5",
+    "@neondatabase/serverless": "^1.1.0",
     "astro": "^5.6.1"
   },
   "devDependencies": {

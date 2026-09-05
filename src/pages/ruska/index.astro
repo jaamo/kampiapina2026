@@ -1,0 +1,1072 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import VoteList from "../../components/ruska/VoteList.astro";
+import { getOpenRound, listApprovedSuggestions, listEpisodes, listRounds } from "../../lib/ruska/db.js";
+import { getVoterId } from "../../lib/ruska/session.js";
+
+export const prerender = false;
+
+// TODO: example.com-osoitteet odottavat vielä oikeita linkkejä.
+// `paths` on ikonin SVG-polut (24 x 24, viivapiirros).
+const importantLinks = [
+  {
+    label: "Tapahtuman sivu",
+    href: "https://www.randonneurs.fi/ruska/ruska-ride-across-finland-2026/",
+    paths: [
+      "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z",
+      "M2 12h20",
+      "M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
+    ],
+  },
+  {
+    label: "Reittikartta",
+    href: "https://www.google.com/maps/d/u/0/viewer?ll=62.85427057861732%2C31.43396798253785&z=6&mid=1MHAodUFzVwO1BpBl53m9u7O--yBkjxA",
+    paths: ["M1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2Z", "M8 2v16", "M16 6v16"],
+  },
+  {
+    label: "Virallinen seuranta",
+    href: "https://example.com/ruska-seuranta",
+    paths: ["M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z", "M4 22v-7"],
+  },
+  {
+    label: "SportRec-seuranta",
+    href: "https://example.com/ruska-sportrec",
+    paths: ["M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z", "M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"],
+  },
+];
+
+// Numero, johon ajajat voivat lähettää kuvia ja videoita tien päältä.
+const riderPhone = "046 804 5056";
+const riderPhoneHref = `tel:${riderPhone.replace(/[^+\d]/g, "")}`;
+
+// Lähtö Huittisista auringonlaskussa, maaliintuloaika Nuorgamissa keskiyöllä
+// lauantain 19.9. päätteeksi. Aikavyöhyke kirjoitettu auki, koska palvelin
+// pyörii UTC:ssä.
+const EVENT_START = new Date("2026-09-11T20:08:00+03:00");
+const EVENT_END = new Date("2026-09-20T00:00:00+03:00");
+
+const COUNTDOWN_UNITS = [
+  { key: "days", label: "Päivää" },
+  { key: "hours", label: "Tuntia" },
+  { key: "minutes", label: "Minuuttia" },
+  { key: "seconds", label: "Sekuntia" },
+];
+const CAPTION_BEFORE = "Lähtöön Huittisista";
+const CAPTION_DURING = "Aikaa jäljellä Nuorgamiin";
+
+function splitDuration(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  return {
+    days: Math.floor(total / 86400),
+    hours: Math.floor(total / 3600) % 24,
+    minutes: Math.floor(total / 60) % 60,
+    seconds: total % 60,
+  };
+}
+
+// Palvelin renderöi lähtöarvot, jotta kello ei vilahda nollissa. Sen jälkeen
+// selain päivittää sekunnin välein. Tapahtuman jälkeen koko elementti jää pois.
+const nowMs = Date.now();
+const countdownTarget = nowMs < EVENT_START.getTime() ? EVENT_START : EVENT_END;
+const countdown =
+  nowMs >= EVENT_END.getTime()
+    ? null
+    : {
+        caption: countdownTarget === EVENT_START ? CAPTION_BEFORE : CAPTION_DURING,
+        values: splitDuration(countdownTarget.getTime() - nowMs),
+      };
+
+const voterId = getVoterId(Astro.cookies);
+
+let episodes = [];
+let openRound = null;
+let suggestions = [];
+let pastRounds = [];
+let dbError = false;
+
+try {
+  [episodes, openRound, pastRounds] = await Promise.all([
+    listEpisodes(),
+    getOpenRound(),
+    listRounds(),
+  ]);
+  if (openRound) suggestions = await listApprovedSuggestions(openRound.id, voterId);
+} catch (error) {
+  // Ilman tietokantaa sivu näyttää silti jaksot ja linkit.
+  console.error("Ruska-sivun tietokantahaku epäonnistui:", error);
+  dbError = true;
+}
+
+pastRounds = pastRounds.filter((round) => round.status === "closed");
+
+const params = Astro.url.searchParams;
+const thanks = params.get("kiitos") === "1";
+const errorMessage = params.get("virhe");
+
+// Jaksoruudukko pidetään täytenä 4 x 2:na: julkaistut ensin, loput paikkamerkkejä.
+const EPISODE_SLOTS = 8;
+const placeholderSlots = Array.from(
+  { length: Math.max(0, EPISODE_SLOTS - episodes.length) },
+  (_, i) => episodes.length + i + 1,
+);
+
+const dateFormat = new Intl.DateTimeFormat("fi-FI", { day: "numeric", month: "numeric", year: "numeric" });
+const formatDate = (value) => (value ? dateFormat.format(new Date(value)) : "");
+---
+
+<Layout
+  title="Ruska-seuranta — Kampiapina"
+  description="Päivittäiset seurantavideot Ruska-ultrapyöräilystä 11.–19.9.2026. Jaksot, tärkeät linkit ja yleisön äänestys päivän kohokohdasta."
+>
+  <link
+    slot="head"
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <Nav active="ruska" />
+
+  <!-- hero -->
+  <header class="hero">
+    <img src="/ruska-norja.jpg" alt="" class="hero__bg" />
+    <div class="hero__shade"></div>
+    <div class="hero__grid">
+      <div class="hero__inner">
+        <div class="eyebrow">11.–19.9.2026 · Huittinen → Nuorgam</div>
+        <h1 class="hero__title">Ruska&#8209;seuranta</h1>
+        <p class="hero__lead">
+          Teen Ruskan ajan päivittäisen seurantavideon kotistudiolta. Videolla käydään läpi tilanne, perehdytään mielenkiintoisiin tapahtumiin ja käänteisiin sekä analysoidaan reittivalintoja.Kerron myös omia kokemuksia Ruskasta. Tervetuloa mukaan!
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--solid" href="#jaksot">Katso jaksot</a>
+          <a class="btn btn--ghost" href="#kohokohta">Äänestä päivän kohokohtaa</a>
+        </div>
+      </div>
+
+      <aside class="rider">
+        <h2 class="rider__title">Ruska HOTLINE!</h2>
+        <p class="rider__body">
+          Oletko ajamassa tai paikan päällä? Olisi mahtava saada tunnelmia tien päältä! Voit lähettää studiolle ääntä, kuvia tai videoita ja nostan niitä esille seurantavideoille.
+        </p>
+        {
+          riderPhone ? (
+            <a class="rider__number" href={riderPhoneHref}>{riderPhone}</a>
+          ) : (
+            <span class="rider__number rider__number--todo">Numero tulossa</span>
+          )
+        }
+      </aside>
+    </div>
+  </header>
+
+  <!-- countdown -->
+  {
+    countdown && (
+      <section
+        class="countdown"
+        data-countdown
+        data-start={EVENT_START.toISOString()}
+        data-end={EVENT_END.toISOString()}
+        data-caption-before={CAPTION_BEFORE}
+        data-caption-during={CAPTION_DURING}
+      >
+        <h2 class="countdown__caption" data-countdown-caption>
+          {countdown.caption}
+        </h2>
+        <div class="countdown__clock">
+          {COUNTDOWN_UNITS.map((unit) => (
+            <div class="countdown__cell">
+              <div class="countdown__num" data-countdown-value={unit.key}>
+                {String(countdown.values[unit.key]).padStart(2, "0")}
+              </div>
+              <div class="countdown__unit">{unit.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- important links -->
+  <nav class="ribbon" aria-label="Tärkeät linkit">
+    <span class="ribbon__label">Tärkeät linkit</span>
+    {
+      importantLinks.map((link) => (
+        <a class="ribbon__link" href={link.href} target="_blank" rel="noopener">
+          <svg class="ribbon__icon" viewBox="0 0 24 24" aria-hidden="true">
+            {link.paths.map((d) => (
+              <path d={d} />
+            ))}
+          </svg>
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <!-- episodes -->
+  <section class="section" id="jaksot">
+    <div class="section__head">
+      <div class="eyebrow eyebrow--olive">Jaksot</div>
+      <h2 class="section__title">Päivittäiset videot</h2>
+    </div>
+
+    <ol class="episodes">
+      {episodes.map((episode, index) => (
+        <li class="episode">
+          <a
+            class="episode__link"
+            href={episode.youtube_id ? `https://www.youtube.com/watch?v=${episode.youtube_id}` : "#"}
+            target={episode.youtube_id ? "_blank" : undefined}
+            rel={episode.youtube_id ? "noopener" : undefined}
+          >
+            <div class="episode__thumb">
+              {episode.youtube_id ? (
+                <img
+                  src={`https://i.ytimg.com/vi/${episode.youtube_id}/hqdefault.jpg`}
+                  alt=""
+                  loading="lazy"
+                />
+              ) : (
+                <>
+                  <img class="episode__ghost" src="/ruska-studio.jpg" alt="" loading="lazy" />
+                  <span class="episode__soon">Tulossa</span>
+                </>
+              )}
+              <span class="episode__num">{String(index + 1).padStart(2, "0")}</span>
+            </div>
+            <div class="episode__body">
+              {episode.published_at && (
+                <div class="episode__date">{formatDate(episode.published_at)}</div>
+              )}
+              <h3 class="episode__title">{episode.title}</h3>
+              {episode.description && <p class="episode__desc">{episode.description}</p>}
+            </div>
+          </a>
+        </li>
+      ))}
+
+      {placeholderSlots.map((slot) => (
+        <li class="episode">
+          <div class="episode__link episode__link--soon">
+            <div class="episode__thumb">
+              <img class="episode__ghost" src="/ruska-studio.jpg" alt="" loading="lazy" />
+              <span class="episode__soon">Tulossa</span>
+              <span class="episode__num episode__num--soon">{String(slot).padStart(2, "0")}</span>
+            </div>
+            <div class="episode__body">
+              <h3 class="episode__title episode__title--soon">Jakso {slot}</h3>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+  </section>
+
+  <!-- highlight vote -->
+  <section class="section" id="kohokohta">
+    <div class="section__head">
+      <div class="eyebrow eyebrow--olive">Yleisöäänestys</div>
+      <h2 class="section__title">Päivän kohokohta</h2>
+      <p class="section__lead">
+   Mikä oli mielestäsi päivän kohokohta? Ehdota ja peukuta! Käydään näitä läpi lähetyksessä.
+      </p>
+    </div>
+
+    {thanks && <div class="note note--ok">Kiitos! Ehdotus on nyt jonossa odottamassa hyväksyntää.</div>}
+    {errorMessage && <div class="note note--bad">{errorMessage}</div>}
+    {dbError && <div class="note note--bad">Äänestys ei juuri nyt vastaa. Yritä hetken päästä uudelleen.</div>}
+
+    {
+      openRound ? (
+        <div class="round">
+          <div class="round__head">
+            <div>
+              <div class="round__badge">Käynnissä</div>
+              <h3 class="round__title">{openRound.title}</h3>
+              {openRound.subtitle && <p class="round__subtitle">{openRound.subtitle}</p>}
+            </div>
+          </div>
+
+          <div class="round__cols">
+            <div>
+              <VoteList suggestions={suggestions} canVote={true} />
+            </div>
+
+            <form class="suggest" method="POST" action="/api/ruska/suggest">
+              <div class="suggest__title">Ehdota kohokohtaa</div>
+              <label class="field">
+                <span class="field__label">Mitä tapahtui?</span>
+                <textarea
+                  name="body"
+                  rows="4"
+                  maxlength="240"
+                  required
+                  placeholder="Esim. Kalmakaltiolla jonotettiin kahvia puoli tuntia ja kukaan ei valittanut."
+                ></textarea>
+              </label>
+              <label class="field">
+                <span class="field__label">Nimi tai nimimerkki (vapaaehtoinen)</span>
+                <input type="text" name="author" maxlength="40" placeholder="Kampiapina" />
+              </label>
+              <button type="submit" class="btn btn--solid btn--full">Lähetä ehdotus</button>
+              <p class="suggest__note">
+                Ehdotus näkyy sivulla vasta kun olen hyväksynyt sen. Tunnistan
+                sinut evästeellä — pelkästään siksi, ettei sama peukku tulisi
+                vahingossa kahdesti.
+              </p>
+            </form>
+          </div>
+        </div>
+      ) : (
+        !dbError && (
+          <p class="placeholder">
+            Äänestys ei ole juuri nyt auki. Uusi kierros avataan aina, kun
+            seuraavan päivän ajo on käynnissä.
+          </p>
+        )
+      )
+    }
+
+    {
+      pastRounds.length > 0 && (
+        <div class="past">
+          <div class="past__title">Aiemmat kierrokset</div>
+          <ul class="past__list">
+            {pastRounds.map((round) => (
+              <li>
+                <a class="past__item" href={`/ruska/kierros/${round.id}`}>
+                  <span class="past__name">{round.title}</span>
+                  <span class="past__meta">
+                    {round.suggestion_count} ehdotusta · {formatDate(round.closed_at ?? round.created_at)}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </section>
+
+  <Footer />
+</Layout>
+
+<script>
+  // Kello tikittää selaimessa. Palvelimen renderöimät arvot ovat jo oikeat,
+  // joten tämä vain jatkaa siitä — ja piilottaa koko lohkon maaliajan mentyä.
+  const root = document.querySelector("[data-countdown]");
+
+  if (root instanceof HTMLElement) {
+    const start = new Date(root.dataset.start ?? "").getTime();
+    const end = new Date(root.dataset.end ?? "").getTime();
+    const caption = root.querySelector("[data-countdown-caption]");
+    const cells = {
+      days: root.querySelector('[data-countdown-value="days"]'),
+      hours: root.querySelector('[data-countdown-value="hours"]'),
+      minutes: root.querySelector('[data-countdown-value="minutes"]'),
+      seconds: root.querySelector('[data-countdown-value="seconds"]'),
+    };
+
+    const render = () => {
+      const now = Date.now();
+      if (now >= end) {
+        root.remove();
+        clearInterval(timer);
+        return;
+      }
+
+      const target = now < start ? start : end;
+      if (caption) {
+        caption.textContent =
+          (now < start ? root.dataset.captionBefore : root.dataset.captionDuring) ?? "";
+      }
+
+      const total = Math.max(0, Math.floor((target - now) / 1000));
+      const values = {
+        days: Math.floor(total / 86400),
+        hours: Math.floor(total / 3600) % 24,
+        minutes: Math.floor(total / 60) % 60,
+        seconds: total % 60,
+      };
+
+      for (const [key, node] of Object.entries(cells)) {
+        if (node) node.textContent = String(values[key]).padStart(2, "0");
+      }
+    };
+
+    const timer = setInterval(render, 1000);
+    render();
+  }
+</script>
+
+<style>
+  .eyebrow {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e2701b;
+    margin-bottom: 16px;
+  }
+  .eyebrow--olive {
+    color: #8f9270;
+  }
+
+  /* hero */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 680px;
+    padding: 110px 46px 100px;
+    background: #191a10;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    overflow: hidden;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(95deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.48) 42%, rgba(0, 0, 0, 0.12) 100%);
+  }
+  .hero__grid {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: center;
+    gap: 48px;
+  }
+  .hero__inner {
+    max-width: 640px;
+  }
+
+  /* ajajien yhteydenottolaatikko — tarralappu hero-kuvan päällä */
+  .rider {
+    position: relative;
+    justify-self: end;
+    width: 320px;
+    padding: 40px 30px 32px;
+    color: #15160e;
+    /* Kevyt valon suunta ja alareunan tummennus tekevät paperin. */
+    background:
+      linear-gradient(178deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 42%),
+      linear-gradient(160deg, #fdc42e 0%, #fbb405 62%, #eda503 100%);
+    transform: rotate(-2.5deg);
+    box-shadow:
+      0 18px 34px rgba(0, 0, 0, 0.5),
+      0 3px 6px rgba(0, 0, 0, 0.34);
+    transition: transform 0.2s ease;
+  }
+  .rider:hover {
+    transform: rotate(-1deg);
+  }
+  /* teippi yläreunassa */
+  .rider::before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    width: 108px;
+    height: 30px;
+    transform: translateX(-50%) rotate(-1.5deg);
+    background: rgba(237, 230, 210, 0.38);
+    border-left: 1px solid rgba(237, 230, 210, 0.22);
+    border-right: 1px solid rgba(237, 230, 210, 0.22);
+    backdrop-filter: blur(1px);
+  }
+  /* taittunut alakulma */
+  .rider::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.03));
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+  .rider__title {
+    margin: 0 0 8px;
+    font-family: "Caveat", "Segoe Script", cursive;
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    transform: rotate(-0.6deg);
+  }
+  .rider__body {
+    /* Otsikko saa jäädä käsialaksi, mutta leipäteksti luetaan — Montserrat. */
+    margin: 0 0 18px;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(21, 22, 14, 0.88);
+  }
+  .rider__number {
+    display: block;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: #15160e;
+    text-decoration: none;
+    white-space: nowrap;
+    /* alleviivaus kuin tussilla vedetty */
+    border-bottom: 3px solid rgba(21, 22, 14, 0.55);
+    padding-bottom: 4px;
+    width: fit-content;
+  }
+  .rider__number:hover {
+    border-bottom-color: #15160e;
+  }
+  .rider__number--todo {
+    font-family: "Caveat", "Segoe Script", cursive;
+    font-size: 26px;
+    color: rgba(21, 22, 14, 0.55);
+    border-bottom-style: dashed;
+    border-bottom-width: 2px;
+  }
+  .hero__title {
+    font-weight: 900;
+    font-size: 78px;
+    line-height: 0.9;
+    margin: 0 0 22px;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    /* Varjostus on kevyt, joten teksti nojaa omaan varjoonsa kuvan päällä. */
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  }
+  .hero__lead {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #cfc7ad;
+    font-weight: 500;
+    margin: 0 0 32px;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
+  }
+  .hero__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* buttons */
+  .btn {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 15px 26px;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn--solid {
+    background: #911b1b;
+    color: #ede6d2;
+  }
+  .btn--solid:hover {
+    background: #a51f1f;
+  }
+  .btn--ghost {
+    border-color: rgba(237, 230, 210, 0.4);
+    color: #ede6d2;
+  }
+  .btn--ghost:hover {
+    border-color: #ede6d2;
+  }
+  .btn--full {
+    width: 100%;
+  }
+
+  /* sections */
+  .section {
+    padding: 72px 46px;
+  }
+  .section__head {
+    max-width: 700px;
+    margin-bottom: 34px;
+  }
+  .section__title {
+    font-weight: 900;
+    font-size: 46px;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .section__lead {
+    margin: 18px 0 0;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #cfc7ad;
+    font-weight: 500;
+  }
+  .placeholder {
+    margin: 0;
+    padding: 34px 30px;
+    border: 1px dashed rgba(237, 230, 210, 0.2);
+    color: #8f9270;
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+  .placeholder a {
+    color: #e2701b;
+  }
+
+  /* episodes */
+  .episodes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* Kiinteä 4 saraketta, jotta kahdeksan jaksoa asettuu siistiksi 4 x 2:ksi. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .episodes__note {
+    margin: 26px 0 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #8f9270;
+    font-weight: 500;
+    max-width: 60ch;
+  }
+  .episodes__note a {
+    color: #e2701b;
+  }
+  .episode__link {
+    display: block;
+    text-decoration: none;
+    background: #191a10;
+    border: 1px solid rgba(237, 230, 210, 0.12);
+    height: 100%;
+    transition: border-color 0.15s ease;
+  }
+  .episode__link:hover {
+    border-color: rgba(226, 112, 27, 0.55);
+  }
+  .episode__thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #15160e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .episode__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .episode__soon {
+    position: absolute;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #cfc7ad;
+    font-weight: 700;
+    padding: 6px 12px;
+    border: 1px solid rgba(237, 230, 210, 0.28);
+    background: rgba(21, 22, 14, 0.5);
+    backdrop-filter: blur(2px);
+  }
+  .episode__num {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: #911b1b;
+    color: #ede6d2;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+  }
+  .episode__body {
+    padding: 20px 22px 24px;
+  }
+  .episode__date {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #e2701b;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .episode__title {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+  .episode__desc {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #8f9270;
+    font-weight: 500;
+  }
+  /* Paikkamerkkikortti: sama kuva harmaana odottamassa oikeaa jaksoa. */
+  .episode__link--soon {
+    cursor: default;
+  }
+  .episode__link--soon:hover {
+    border-color: rgba(237, 230, 210, 0.12);
+  }
+  .episode__ghost {
+    filter: grayscale(1) brightness(0.42) contrast(0.95);
+  }
+  .episode__num--soon {
+    background: rgba(21, 22, 14, 0.85);
+    color: #8f9270;
+  }
+  .episode__title--soon {
+    color: #8f9270;
+    font-weight: 700;
+  }
+
+  /* countdown */
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px 40px;
+    padding: 26px 46px;
+    background: linear-gradient(100deg, #911b1b, #6d1414);
+    color: #ede6d2;
+  }
+  .countdown__caption {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .countdown__clock {
+    display: flex;
+    gap: 10px;
+  }
+  .countdown__cell {
+    min-width: 86px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(237, 230, 210, 0.3);
+    padding: 12px 10px 11px;
+  }
+  .countdown__num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 0.9;
+    color: #ede6d2;
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown__unit {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #f0d5d5;
+    font-weight: 700;
+    margin-top: 7px;
+  }
+
+  /* tärkeät linkit — kapea nauha heron alla */
+  .ribbon {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 30px;
+    padding: 15px 46px;
+    background: #191a10;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+  }
+  .ribbon__label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #696c46;
+    font-weight: 700;
+  }
+  .ribbon__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    color: #a8a488;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: color 0.15s ease;
+  }
+  .ribbon__link:hover {
+    color: #e2701b;
+  }
+  .ribbon__icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* round */
+  .note {
+    padding: 14px 20px;
+    margin-bottom: 22px;
+    font-size: 15px;
+    font-weight: 600;
+    border-left: 3px solid;
+  }
+  .note--ok {
+    background: rgba(105, 108, 70, 0.22);
+    border-color: #8f9270;
+    color: #ede6d2;
+  }
+  .note--bad {
+    background: rgba(145, 27, 27, 0.22);
+    border-color: #911b1b;
+    color: #f0d5d5;
+  }
+  .round__badge {
+    display: inline-block;
+    background: #e2701b;
+    color: #15160e;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    margin-bottom: 12px;
+  }
+  .round__title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .round__subtitle {
+    margin: 8px 0 0;
+    color: #8f9270;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .round__head {
+    margin-bottom: 26px;
+  }
+  .round__cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* suggest form */
+  .suggest {
+    background: #191a10;
+    border: 1px solid rgba(237, 230, 210, 0.14);
+    padding: 26px 24px 28px;
+    position: sticky;
+    top: 20px;
+  }
+  .suggest__title {
+    font-weight: 900;
+    font-size: 20px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .field {
+    display: block;
+    margin-bottom: 16px;
+  }
+  .field__label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .field textarea,
+  .field input {
+    width: 100%;
+    background: #15160e;
+    border: 1px solid rgba(237, 230, 210, 0.2);
+    color: #ede6d2;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 14px;
+    border-radius: 2px;
+    resize: vertical;
+  }
+  .field textarea:focus,
+  .field input:focus {
+    outline: none;
+    border-color: #e2701b;
+  }
+  .field textarea::placeholder,
+  .field input::placeholder {
+    color: #5f6247;
+  }
+  .suggest__note {
+    margin: 14px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #696c46;
+    font-weight: 500;
+  }
+
+  /* past rounds */
+  .past {
+    margin-top: 48px;
+    border-top: 1px solid rgba(237, 230, 210, 0.12);
+    padding-top: 28px;
+  }
+  .past__title {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .past__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+  }
+  .past__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-decoration: none;
+    padding: 14px 18px;
+    background: #191a10;
+    border: 1px solid rgba(237, 230, 210, 0.1);
+    transition: border-color 0.15s ease;
+  }
+  .past__item:hover {
+    border-color: rgba(226, 112, 27, 0.5);
+  }
+  .past__name {
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .past__meta {
+    font-size: 12px;
+    color: #696c46;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 1180px) {
+    .episodes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 1000px) {
+    .hero {
+      min-height: 0;
+    }
+    .hero__shade {
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.62) 100%);
+    }
+    .hero__grid {
+      grid-template-columns: 1fr;
+      gap: 34px;
+    }
+    .rider {
+      justify-self: start;
+      transform: rotate(-1.5deg);
+    }
+  }
+  @media (max-width: 900px) {
+    .episodes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .hero__title {
+      font-size: 58px;
+    }
+    .section__title {
+      font-size: 36px;
+    }
+    .round__cols {
+      grid-template-columns: 1fr;
+    }
+    .suggest {
+      position: static;
+    }
+  }
+  @media (max-width: 600px) {
+    .countdown {
+      padding: 22px 24px;
+      gap: 16px;
+    }
+    .countdown__caption {
+      font-size: 20px;
+    }
+    .countdown__clock {
+      gap: 8px;
+      width: 100%;
+    }
+    .countdown__cell {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 10px 4px 9px;
+    }
+    .countdown__num {
+      font-size: 34px;
+    }
+    .countdown__unit {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+    .ribbon {
+      gap: 10px 22px;
+      padding: 14px 24px;
+    }
+    .episodes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .hero {
+      padding: 60px 24px 52px;
+    }
+    .hero__title {
+      font-size: 44px;
+    }
+    .section {
+      padding: 52px 24px;
+    }
+    .section__title {
+      font-size: 30px;
+    }
+  }
+</style>

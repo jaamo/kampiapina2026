@@ -1,0 +1,620 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { listEpisodes, listRounds, listSuggestionsForAdmin } from "../../lib/ruska/db.js";
+import { isAdmin } from "../../lib/ruska/session.js";
+import { MAX_AUTHOR, MAX_BODY } from "../../lib/ruska/suggestion.js";
+
+export const prerender = false;
+
+const authed = await isAdmin(Astro.cookies);
+const errorMessage = Astro.url.searchParams.get("virhe");
+
+let rounds = [];
+let episodes = [];
+let queues = new Map();
+
+if (authed) {
+  [rounds, episodes] = await Promise.all([listRounds(), listEpisodes()]);
+  const lists = await Promise.all(rounds.map((round) => listSuggestionsForAdmin(round.id)));
+  queues = new Map(rounds.map((round, index) => [round.id, lists[index]]));
+}
+
+const openRound = rounds.find((round) => round.status === "open") ?? null;
+const pendingTotal = [...queues.values()]
+  .flat()
+  .filter((suggestion) => suggestion.status === "pending").length;
+
+const dateFormat = new Intl.DateTimeFormat("fi-FI", {
+  day: "numeric",
+  month: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const formatStamp = (value) => (value ? dateFormat.format(new Date(value)) : "");
+const statusLabel = { pending: "Jonossa", approved: "Julkaistu", rejected: "Hylätty" };
+
+// Ajuri palauttaa DATE-sarakkeen paikallisena keskiyönä, joten toISOString()
+// heittäisi päivän edelliselle. Poimitaan osat suoraan.
+const toDateInput = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+---
+
+<Layout title="Ruska-admin — Kampiapina" description="Ruska-seurannan ylläpito." noindex={true}>
+  <div class="top">
+    <div>
+      <div class="top__kicker">Kampiapina</div>
+      <h1 class="top__title">Ruska-admin</h1>
+    </div>
+    {
+      authed && (
+        <form method="POST" action="/api/ruska/admin/login" class="top__out">
+          <input type="hidden" name="action" value="logout" />
+          <button type="submit" class="btn btn--ghost">Kirjaudu ulos</button>
+        </form>
+      )
+    }
+  </div>
+
+  <main class="wrap">
+    {errorMessage && <div class="note note--bad">{errorMessage}</div>}
+
+    {
+      !authed ? (
+        <form method="POST" action="/api/ruska/admin/login" class="card card--login">
+          <h2 class="card__title">Kirjaudu sisään</h2>
+          <label class="field">
+            <span class="field__label">Salasana</span>
+            <input type="password" name="password" required autocomplete="current-password" />
+          </label>
+          <button type="submit" class="btn btn--solid btn--full">Kirjaudu</button>
+        </form>
+      ) : (
+        <>
+          <section class="card">
+            <h2 class="card__title">Uusi kierros</h2>
+            <p class="card__hint">
+              Uuden kierroksen avaaminen sulkee automaattisesti käynnissä olevan.
+              {openRound && <> Nyt auki: <strong>{openRound.title}</strong>.</>}
+            </p>
+            <form method="POST" action="/api/ruska/admin/action" class="row">
+              <input type="hidden" name="action" value="round.create" />
+              <input type="text" name="title" placeholder="Päivä 3 — Oulu–Rovaniemi" required class="grow" />
+              <input type="text" name="subtitle" placeholder="Alaotsikko (vapaaehtoinen)" class="grow" />
+              <button type="submit" class="btn btn--solid">Avaa kierros</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Kierrokset ja moderointi</h2>
+              {pendingTotal > 0 && <span class="pill">{pendingTotal} jonossa</span>}
+            </div>
+
+            {rounds.length === 0 && <p class="card__hint">Ei vielä yhtään kierrosta.</p>}
+
+            {rounds.map((round) => (
+              <details class="round" open={round.status === "open"}>
+                <summary class="round__summary">
+                  <span class:list={["dot", round.status === "open" ? "dot--open" : "dot--closed"]} />
+                  <span class="round__name">{round.title}</span>
+                  <span class="round__meta">
+                    {(queues.get(round.id) ?? []).filter((s) => s.status === "pending").length} jonossa ·{" "}
+                    {round.suggestion_count} julkaistu
+                  </span>
+                </summary>
+
+                <div class="round__actions">
+                  {round.status === "open" ? (
+                    <form method="POST" action="/api/ruska/admin/action">
+                      <input type="hidden" name="action" value="round.close" />
+                      <input type="hidden" name="id" value={round.id} />
+                      <button type="submit" class="btn btn--ghost btn--sm">Sulje kierros</button>
+                    </form>
+                  ) : (
+                    <form method="POST" action="/api/ruska/admin/action">
+                      <input type="hidden" name="action" value="round.reopen" />
+                      <input type="hidden" name="id" value={round.id} />
+                      <button type="submit" class="btn btn--ghost btn--sm">Avaa uudelleen</button>
+                    </form>
+                  )}
+                  <a class="btn btn--ghost btn--sm" href={`/ruska/kierros/${round.id}`}>Näytä sivulla</a>
+                  <form method="POST" action="/api/ruska/admin/action" data-confirm="Poistetaanko kierros ja kaikki sen ehdotukset?">
+                    <input type="hidden" name="action" value="round.delete" />
+                    <input type="hidden" name="id" value={round.id} />
+                    <button type="submit" class="btn btn--danger btn--sm">Poista</button>
+                  </form>
+                </div>
+
+                <ul class="queue">
+                  {(queues.get(round.id) ?? []).length === 0 && (
+                    <li class="queue__empty">Ei ehdotuksia.</li>
+                  )}
+                  {(queues.get(round.id) ?? []).map((suggestion) => (
+                    <li class:list={["queue__item", `queue__item--${suggestion.status}`]}>
+                      <div class="queue__body">
+                        <p class="queue__text">{suggestion.body}</p>
+                        <div class="queue__meta">
+                          {statusLabel[suggestion.status]} · {suggestion.votes} peukkua ·{" "}
+                          {formatStamp(suggestion.created_at)}
+                          {suggestion.author && <> · {suggestion.author}</>}
+                        </div>
+                        <details class="edit">
+                          <summary class="edit__toggle">Muokkaa</summary>
+                          <form method="POST" action="/api/ruska/admin/action" class="edit__form">
+                            <input type="hidden" name="action" value="suggestion.save" />
+                            <input type="hidden" name="id" value={suggestion.id} />
+                            <textarea
+                              name="body"
+                              rows="2"
+                              maxlength={MAX_BODY}
+                              required
+                              aria-label="Ehdotuksen teksti"
+                            >{suggestion.body}</textarea>
+                            <div class="edit__row">
+                              <input
+                                type="text"
+                                name="author"
+                                value={suggestion.author}
+                                maxlength={MAX_AUTHOR}
+                                placeholder="Nimimerkki (vapaaehtoinen)"
+                                aria-label="Nimimerkki"
+                              />
+                              <button type="submit" class="btn btn--ghost btn--sm">Tallenna</button>
+                            </div>
+                          </form>
+                        </details>
+                      </div>
+                      <div class="queue__buttons">
+                        {suggestion.status !== "approved" && (
+                          <form method="POST" action="/api/ruska/admin/action">
+                            <input type="hidden" name="action" value="suggestion.approve" />
+                            <input type="hidden" name="id" value={suggestion.id} />
+                            <button type="submit" class="btn btn--solid btn--sm">Hyväksy</button>
+                          </form>
+                        )}
+                        {suggestion.status !== "rejected" && (
+                          <form method="POST" action="/api/ruska/admin/action">
+                            <input type="hidden" name="action" value="suggestion.reject" />
+                            <input type="hidden" name="id" value={suggestion.id} />
+                            <button type="submit" class="btn btn--ghost btn--sm">Hylkää</button>
+                          </form>
+                        )}
+                        <form method="POST" action="/api/ruska/admin/action" data-confirm="Poistetaanko ehdotus lopullisesti?">
+                          <input type="hidden" name="action" value="suggestion.delete" />
+                          <input type="hidden" name="id" value={suggestion.id} />
+                          <button type="submit" class="btn btn--danger btn--sm">Poista</button>
+                        </form>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+          </section>
+
+          <section class="card">
+            <h2 class="card__title">Jaksot</h2>
+            <p class="card__hint">
+              Jaksot näkyvät /ruska-sivulla heti tallennuksen jälkeen. YouTube-kenttään
+              käy koko osoite tai pelkkä videotunniste. Järjestysluku pienimmästä suurimpaan.
+            </p>
+
+            <form method="POST" action="/api/ruska/admin/action" class="episode-form">
+              <input type="hidden" name="action" value="episode.save" />
+              <input type="text" name="title" placeholder="Jakson otsikko" required class="grow" />
+              <input type="text" name="youtube_id" placeholder="YouTube-osoite tai tunniste" class="grow" />
+              <input type="date" name="published_at" />
+              <input type="number" name="sort_order" placeholder="Järjestys" value="0" class="narrow" />
+              <textarea name="description" rows="2" placeholder="Lyhyt kuvaus (vapaaehtoinen)" class="full"></textarea>
+              <button type="submit" class="btn btn--solid">Lisää jakso</button>
+            </form>
+
+            <ul class="episodes">
+              {episodes.length === 0 && <li class="queue__empty">Ei vielä jaksoja.</li>}
+              {episodes.map((episode) => (
+                <li class="episodes__item">
+                  <form method="POST" action="/api/ruska/admin/action" class="episode-form">
+                    <input type="hidden" name="action" value="episode.save" />
+                    <input type="hidden" name="id" value={episode.id} />
+                    <input type="text" name="title" value={episode.title} required class="grow" />
+                    <input type="text" name="youtube_id" value={episode.youtube_id} placeholder="YouTube" class="grow" />
+                    <input
+                      type="date"
+                      name="published_at"
+                      value={toDateInput(episode.published_at)}
+                    />
+                    <input type="number" name="sort_order" value={episode.sort_order} class="narrow" />
+                    <textarea name="description" rows="2" class="full">{episode.description}</textarea>
+                    <button type="submit" class="btn btn--ghost btn--sm">Tallenna</button>
+                  </form>
+                  <form method="POST" action="/api/ruska/admin/action" data-confirm="Poistetaanko jakso?">
+                    <input type="hidden" name="action" value="episode.delete" />
+                    <input type="hidden" name="id" value={episode.id} />
+                    <button type="submit" class="btn btn--danger btn--sm">Poista</button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
+      )
+    }
+  </main>
+</Layout>
+
+<script>
+  // Poistot kysyvät varmistuksen; muuten admin on tahallaan tylsä lomakesivu.
+  document.querySelectorAll("form[data-confirm]").forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      if (!window.confirm(form.getAttribute("data-confirm") ?? "Oletko varma?")) {
+        event.preventDefault();
+      }
+    });
+  });
+</script>
+
+<style>
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 26px 34px;
+    background: #911b1b;
+  }
+  .top__kicker {
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #f2caca;
+    margin-bottom: 6px;
+  }
+  .top__title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .top__out {
+    margin: 0;
+  }
+  .wrap {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 34px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card {
+    background: #191a10;
+    border: 1px solid rgba(237, 230, 210, 0.12);
+    padding: 26px 26px 28px;
+  }
+  .card--login {
+    max-width: 380px;
+    margin: 40px auto;
+  }
+  .card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .card__title {
+    margin: 0 0 14px;
+    font-size: 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .card__head .card__title {
+    margin-bottom: 0;
+  }
+  .card__hint {
+    margin: 0 0 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #8f9270;
+    font-weight: 500;
+  }
+  .pill {
+    background: #e2701b;
+    color: #15160e;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+  }
+  .note {
+    padding: 13px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-left: 3px solid #911b1b;
+    background: rgba(145, 27, 27, 0.24);
+    color: #f0d5d5;
+  }
+
+  /* forms */
+  .row,
+  .episode-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+  .grow {
+    flex: 1 1 190px;
+    min-width: 0;
+  }
+  .narrow {
+    width: 92px;
+  }
+  .full {
+    flex: 1 1 100%;
+  }
+  input,
+  textarea {
+    background: #15160e;
+    border: 1px solid rgba(237, 230, 210, 0.2);
+    color: #ede6d2;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 12px;
+    border-radius: 2px;
+    resize: vertical;
+  }
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #e2701b;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #5f6247;
+  }
+  .field {
+    display: block;
+    margin-bottom: 16px;
+  }
+  .field__label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .field input {
+    width: 100%;
+  }
+  .btn {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .btn--sm {
+    padding: 9px 14px;
+    font-size: 11px;
+  }
+  .btn--full {
+    width: 100%;
+  }
+  .btn--solid {
+    background: #911b1b;
+    color: #ede6d2;
+  }
+  .btn--solid:hover {
+    background: #a51f1f;
+  }
+  .btn--ghost {
+    border-color: rgba(237, 230, 210, 0.35);
+    color: #ede6d2;
+    background: transparent;
+  }
+  .btn--ghost:hover {
+    border-color: #ede6d2;
+  }
+  .btn--danger {
+    border-color: rgba(145, 27, 27, 0.7);
+    color: #d98686;
+    background: transparent;
+  }
+  .btn--danger:hover {
+    background: #911b1b;
+    color: #ede6d2;
+  }
+
+  /* rounds */
+  .round {
+    border-top: 1px solid rgba(237, 230, 210, 0.1);
+    padding: 14px 0;
+  }
+  .round__summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .round__summary::-webkit-details-marker {
+    display: none;
+  }
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .dot--open {
+    background: #e2701b;
+  }
+  .dot--closed {
+    background: #4a4d33;
+  }
+  .round__meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: #8f9270;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .round__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .round__actions form {
+    margin: 0;
+  }
+  .queue {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .queue__empty {
+    font-size: 13px;
+    color: #696c46;
+    font-weight: 500;
+  }
+  .queue__item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background: #15160e;
+    border: 1px solid rgba(237, 230, 210, 0.1);
+    border-left: 3px solid #4a4d33;
+    padding: 14px 16px;
+  }
+  .queue__item--pending {
+    border-left-color: #fbb405;
+  }
+  .queue__item--approved {
+    border-left-color: #696c46;
+  }
+  .queue__item--rejected {
+    border-left-color: #911b1b;
+    opacity: 0.6;
+  }
+  .queue__body {
+    flex: 1 1 300px;
+    min-width: 0;
+  }
+  .queue__text {
+    margin: 0 0 6px;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .queue__meta {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 600;
+  }
+  .edit {
+    margin-top: 10px;
+  }
+  .edit__toggle {
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 600;
+  }
+  .edit__toggle:hover {
+    color: #ede6d2;
+  }
+  .edit__form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .edit__row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .edit__row input {
+    flex: 1 1 200px;
+  }
+  .queue__buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .queue__buttons form {
+    margin: 0;
+  }
+
+  /* episodes */
+  .episodes {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .episodes__item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #15160e;
+    border: 1px solid rgba(237, 230, 210, 0.1);
+    padding: 14px 16px;
+  }
+  .episodes__item .episode-form {
+    flex: 1 1 auto;
+  }
+  .episodes__item form {
+    margin: 0;
+  }
+
+  @media (max-width: 600px) {
+    .top {
+      padding: 20px 20px;
+    }
+    .wrap {
+      padding: 24px 16px 60px;
+    }
+    .card {
+      padding: 20px 18px 22px;
+    }
+    .episodes__item {
+      flex-direction: column;
+    }
+  }
+</style>

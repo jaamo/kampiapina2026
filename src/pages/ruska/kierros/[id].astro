@@ -1,0 +1,239 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Nav from "../../../components/Nav.astro";
+import Footer from "../../../components/Footer.astro";
+import VoteList from "../../../components/ruska/VoteList.astro";
+import { getRound, listApprovedSuggestions, listRounds } from "../../../lib/ruska/db.js";
+import { getVoterId } from "../../../lib/ruska/session.js";
+
+export const prerender = false;
+
+const id = Number.parseInt(Astro.params.id ?? "", 10);
+if (!Number.isInteger(id)) return Astro.redirect("/ruska", 302);
+
+const voterId = getVoterId(Astro.cookies);
+const round = await getRound(id);
+if (!round) return Astro.redirect("/ruska", 302);
+
+const [suggestions, allRounds] = await Promise.all([
+  listApprovedSuggestions(round.id, voterId),
+  listRounds(),
+]);
+
+const isOpen = round.status === "open";
+const others = allRounds.filter((r) => r.id !== round.id);
+const winner = suggestions.length > 0 && suggestions[0].votes > 0 ? suggestions[0] : null;
+
+const dateFormat = new Intl.DateTimeFormat("fi-FI", { day: "numeric", month: "numeric", year: "numeric" });
+const formatDate = (value) => (value ? dateFormat.format(new Date(value)) : "");
+---
+
+<Layout
+  title={`${round.title} — Ruska-seuranta — Kampiapina`}
+  description={`Yleisön ehdotukset ja äänet: ${round.title}.`}
+>
+  <Nav active="ruska" />
+
+  <header class="head">
+    <a class="back" href="/ruska">← Ruska-seuranta</a>
+    <div class:list={["badge", isOpen ? "badge--open" : "badge--closed"]}>
+      {isOpen ? "Käynnissä" : `Suljettu ${formatDate(round.closed_at)}`}
+    </div>
+    <h1 class="head__title">{round.title}</h1>
+    {round.subtitle && <p class="head__subtitle">{round.subtitle}</p>}
+  </header>
+
+  <main class="wrap">
+    {
+      winner && !isOpen && (
+        <div class="winner">
+          <div class="winner__label">Kierroksen voittaja · {winner.votes} peukkua</div>
+          <p class="winner__text">{winner.body}</p>
+          {winner.author && <div class="winner__author">— {winner.author}</div>}
+        </div>
+      )
+    }
+
+    {
+      !isOpen && (
+        <p class="closed-note">
+          Tämä kierros on suljettu, joten äänestys ei ole enää auki. Tulokset
+          jäävät tähän talteen.
+        </p>
+      )
+    }
+
+    <VoteList
+      suggestions={suggestions}
+      canVote={isOpen}
+      emptyText="Tälle kierrokselle ei julkaistu yhtään ehdotusta."
+    />
+
+    {
+      others.length > 0 && (
+        <nav class="others">
+          <div class="others__title">Muut kierrokset</div>
+          <ul class="others__list">
+            {others.map((other) => (
+              <li>
+                <a class="others__item" href={`/ruska/kierros/${other.id}`}>
+                  <span>{other.title}</span>
+                  <span class="others__meta">
+                    {other.status === "open" ? "Käynnissä" : `${other.suggestion_count} ehdotusta`}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .head {
+    padding: 56px 46px 40px;
+    border-bottom: 1px solid rgba(237, 230, 210, 0.12);
+    background: linear-gradient(100deg, #20220f, #191a10);
+  }
+  .back {
+    display: block;
+    width: fit-content;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #8f9270;
+    text-decoration: none;
+    margin-bottom: 22px;
+  }
+  .back:hover {
+    color: #e2701b;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    margin-bottom: 12px;
+  }
+  .badge--open {
+    background: #e2701b;
+    color: #15160e;
+  }
+  .badge--closed {
+    background: rgba(237, 230, 210, 0.12);
+    color: #8f9270;
+  }
+  .head__title {
+    margin: 0;
+    font-weight: 900;
+    font-size: 48px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .head__subtitle {
+    margin: 14px 0 0;
+    color: #cfc7ad;
+    font-size: 17px;
+    font-weight: 500;
+    max-width: 60ch;
+  }
+  .wrap {
+    padding: 44px 46px 72px;
+    max-width: 860px;
+  }
+  .winner {
+    border: 1px solid rgba(226, 112, 27, 0.5);
+    background: linear-gradient(100deg, rgba(226, 112, 27, 0.14), #191a10 65%);
+    padding: 28px 30px;
+    margin-bottom: 28px;
+  }
+  .winner__label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #e2701b;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .winner__text {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.45;
+    font-weight: 700;
+  }
+  .winner__author {
+    margin-top: 10px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 600;
+  }
+  .closed-note {
+    margin: 0 0 22px;
+    font-size: 14px;
+    color: #8f9270;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .others {
+    margin-top: 48px;
+    border-top: 1px solid rgba(237, 230, 210, 0.12);
+    padding-top: 26px;
+  }
+  .others__title {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8f9270;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .others__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .others__item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    text-decoration: none;
+    padding: 12px 16px;
+    background: #191a10;
+    border: 1px solid rgba(237, 230, 210, 0.1);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .others__item:hover {
+    border-color: rgba(226, 112, 27, 0.5);
+  }
+  .others__meta {
+    color: #696c46;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .head {
+      padding: 40px 24px 32px;
+    }
+    .head__title {
+      font-size: 32px;
+    }
+    .wrap {
+      padding: 32px 24px 56px;
+    }
+  }
+</style>
